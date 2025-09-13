@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store
+.next/
+dist/
+out/
+coverage/
+.env
+.env.*.local
+.DS_Store
+.idea/
+.vscode/*.log
+turbo/
