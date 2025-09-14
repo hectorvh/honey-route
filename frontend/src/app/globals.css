@@ -13,3 +13,9 @@ body {
 a {
   @apply underline;
 }
+.brand-eco {
+  color: rgb(212 212 212);
+} /* gray-300 */
+.brand-ventus {
+  color: #0375ff;
+}
