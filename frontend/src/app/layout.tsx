@@ -1,18 +1,13 @@
+// frontend/src/app/layout.tsx
 import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'HoneyRoute',
-  description: 'HoneyRoute app shell',
-};
+import { I18nProvider } from '@/i18n/I18nProvider';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-neutral-50 text-neutral-900`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <I18nProvider>{children}</I18nProvider>
+      </body>
     </html>
   );
 }
