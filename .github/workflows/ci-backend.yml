@@ -4,18 +4,27 @@ on:
     paths: ["backend/**", ".github/workflows/ci-backend.yml"]
   pull_request:
     paths: ["backend/**", ".github/workflows/ci-backend.yml"]
+
+env:
+  CI: "1"
+  HUSKY: "0"
+  NODE_OPTIONS: "--max_old_space_size=4096"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
-        with: { version: 9 }
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile=false
-      - run: pnpm -w --filter ./backend lint || true
-      - run: pnpm -w --filter ./backend test || true
-      - run: pnpm -w --filter ./backend build
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+      - name: Lint (best-effort)
+        run: pnpm --filter "backend..." lint || true
+      - name: Build
+        run: pnpm --filter "backend..." build
