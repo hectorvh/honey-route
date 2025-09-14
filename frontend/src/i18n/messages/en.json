@@ -6,5 +6,18 @@
     "offline": "Works offline",
     "cta": "Get Started",
     "poweredPrefix": "Powered by"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Login to manage your apiaries.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log In",
+    "or": "or",
+    "guest": "Continue as guest",
+    "locale": "EN"
+  },
+  "common": {
+    "poweredBy": "Powered by"
   }
 }

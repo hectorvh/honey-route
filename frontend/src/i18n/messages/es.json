@@ -6,5 +6,18 @@
     "offline": "Funciona sin conexión",
     "cta": "Empezar",
     "poweredPrefix": "Con tecnología de"
+  },
+  "login": {
+    "title": "Bienvenido de nuevo",
+    "subtitle": "Inicia sesión para gestionar tus apiarios.",
+    "email": "Correo",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "or": "o",
+    "guest": "Continuar como invitado",
+    "locale": "ES-MX"
+  },
+  "common": {
+    "poweredBy": "Con tecnología de"
   }
 }
