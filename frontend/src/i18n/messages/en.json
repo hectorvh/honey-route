@@ -17,7 +17,37 @@
     "guest": "Continue as guest",
     "locale": "EN"
   },
+  "apiary": {
+    "newTitle": "New Apiary",
+    "newSubtitle": "Create your first apiary to get started.",
+    "name": "Apiary Name",
+    "nameLabel": "Apiary Name",
+    "namePh": "e.g. Meadow Apiary",
+    "locationOpt": "Location (optional)",
+    "locationLabel": "Location (optional)",
+    "locationPh": "e.g. 123 Main St",
+    "hiveType": "Hive Type",
+    "hiveTypeLabel": "Hive Type",
+    "hiveTypePh": "Select Hive Type",
+    "createCta": "Create Apiary",
+    "types": {
+      "langstroth": "Langstroth",
+      "topbar": "Top-bar",
+      "warre": "Warré"
+    },
+    "errors": {
+      "nameReq": "Please enter a name.",
+      "nameRequired": "Please enter a name."
+    }
+  },
   "common": {
-    "poweredBy": "Powered by"
+    "back": "Back",
+    "poweredBy": "Powered by",
+    "other": "Other",
+    "genericError": "Something went wrong."
+  },
+  "auth": {
+    "notAuthenticated": "You need to sign in.",
+    "forbidden": "You don’t have access."
   }
 }

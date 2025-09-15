@@ -29,7 +29,7 @@ export default function Onboarding() {
       heroSlot={
         <div className="relative h-80">
           <Image
-            src="/images/onboarding-hero.jpg"
+            src="/images/onboarding.jpg"
             alt="Bee and flowers"
             fill
             className="object-cover"

@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function RootGate() {
-  const supabase = await createClient(); // <-- await
+  const supabase = await createClient();
 
   const {
     data: { session },
@@ -12,7 +12,7 @@ export default async function RootGate() {
   const { count, error } = await supabase
     .from('apiaries')
     .select('id', { count: 'exact', head: true })
-    .eq('owner_id', session.user.id);
+    .eq('owner_id', session.user.id); // <-- usa la columna correcta
 
   if (error) redirect('/apiaries/new');
   if (!count || count === 0) redirect('/apiaries/new');

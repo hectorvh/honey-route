@@ -19,3 +19,13 @@ a {
 .brand-ventus {
   color: #0375ff;
 }
+@layer utilities {
+  .h-card {
+    height: 720px;
+  } /* alto consistente móvil */
+  @media (min-width: 400px) {
+    .h-card {
+      height: 760px;
+    }
+  }
+}

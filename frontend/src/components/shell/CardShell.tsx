@@ -12,6 +12,7 @@ type Props = {
   heroSlot?: React.ReactNode; // ← Si lo pasas, tú controlas todo el hero (imagen, overlay, toggle)
   className?: string;
   contentClassName?: string;
+  headerCenter?: React.ReactNode;
 };
 
 export default function CardShell({

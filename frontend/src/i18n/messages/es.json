@@ -15,9 +15,38 @@
     "submit": "Iniciar sesión",
     "or": "o",
     "guest": "Continuar como invitado",
-    "locale": "ES-MX"
+    "locale": "ES"
+  },
+  "apiary": {
+    "newTitle": "Nuevo apiario",
+    "newSubtitle": "Crea tu primer apiario para comenzar.",
+    "name": "Nombre del apiario",
+    "nameLabel": "Nombre del apiario",
+    "namePh": "e.g. Apiario Prado",
+    "locationOpt": "Ubicación (opcional)",
+    "locationLabel": "Ubicación (opcional)",
+    "locationPh": "e.g. Calle 123",
+    "hiveType": "Tipo de colmena",
+    "hiveTypeLabel": "Tipo de colmena",
+    "hiveTypePh": "Selecciona el tipo",
+    "createCta": "Crear apiario",
+    "types": {
+      "langstroth": "Langstroth",
+      "topbar": "Top-bar",
+      "warre": "Warré"
+    },
+    "errors": {
+      "nameReq": "Ingresa un nombre.",
+      "nameRequired": "Ingresa un nombre."
+    }
   },
   "common": {
-    "poweredBy": "Con tecnología de"
+    "back": "Atrás",
+    "poweredBy": "Con tecnología de",
+    "genericError": "Algo salió mal."
+  },
+  "auth": {
+    "notAuthenticated": "Necesitas iniciar sesión.",
+    "forbidden": "No tienes acceso."
   }
 }

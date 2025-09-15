@@ -27,15 +27,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [err, setErr] = useState<string | null>(null);
 
-  // ✅ Tipamos el retorno y evitamos `any`
-  const signInGoogle = async (): Promise<void> => {
-    const supabase = supabaseBrowser();
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: 'http://localhost:3000/auth/callback' },
-    });
-  };
-
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setErr(null);
@@ -48,7 +39,7 @@ export default function LoginPage() {
       const supabase = supabaseBrowser();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.push('/hives');
+      router.push('/');
     } catch (err: unknown) {
       setErr(getErrorMessage(err));
     } finally {
@@ -105,16 +96,10 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-amber-400 font-medium">
-          <button
-            className="underline-offset-4 hover:underline"
-            onClick={() => router.push('/hives')}
-          >
+          <button className="underline-offset-4 hover:underline" onClick={() => router.push('/')}>
             {t('login.guest')}
           </button>
         </p>
-
-        {/* (Opcional) Botón Google si lo quieres visible */}
-        {/* <Button variant="secondary" className="mt-4 w-full" onClick={signInGoogle}>Google</Button> */}
 
         <p className="mt-8 text-center text-xs text-neutral-500">
           <span className="text-neutral-400">{t('common.poweredBy')} </span>

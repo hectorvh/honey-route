@@ -5,7 +5,6 @@ export default function MobileScreen({
   children,
   headerLeft,
   headerRight,
-  className,
   contentClassName,
 }: {
   children: React.ReactNode;
