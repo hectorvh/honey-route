@@ -157,7 +157,6 @@ Backend
    • features: feat/<área>-<slug> (p. ej. feat/ui-tabbar), fixes: fix/<área>-<slug>.
 
 Conventions:
-Conventions:
 • Commits: Conventional Commits (feat:, fix:, chore:, docs:, refactor:, test:).
 • PRs: use template; add screenshots; ensure CI passes.
 • Merge: Squash & Merge into develop. From develop → main under release/tag (when applicable).
@@ -234,10 +233,33 @@ Make sure .env\* files are ignored in .gitignore (already configured).
 3. Dependencies
    pnpm --filter frontend add @supabase/supabase-js @supabase/ssr
 
+PWA (installable app)
+• next-pwa configurado en frontend/next.config.mjs.
+• SW se registra solo en producción (NODE_ENV=production).
+• Fallback offline en /offline.
+• Manifest
+• src/app/manifest.ts (App Router).
+• (Opcional) public/manifest.webmanifest si lo quieres servir estático.
+• Íconos
+• public/icons/favicon.png
+• public/icons/apple-touch-icon.png
+• public/icons/maskable.png (192x192 y 512x512)
+• public/icons/logo-honeyroute-amber-1024.png (opcional para UI)
+Build & run prod (necesario para SW)
+pnpm --filter frontend build
+pnpm --filter frontend start -H 0.0.0.0 -p 3002
+Probar en el teléfono (misma red)
+
+1.  Asegúrate de correr production server (no dev).
+2.  Expón tu app con Cloudflare Tunnel:
+    cloudflared tunnel --url http://localhost:3002
+3.  Abre la URL https://<algo>.trycloudflare.com en el móvil.
+4.  “Add to Home Screen” / “Instalar app”.
+
 12) License & conduct
-• MIT(see LICENSE)
-• Code of Conduct in CODE_OF_CONDUCT.md
-• Contribution guidelines in CONTRIBUTING.md
+    • MIT(see LICENSE)
+    • Code of Conduct in CODE_OF_CONDUCT.md
+    • Contribution guidelines in CONTRIBUTING.md
 
 13. Contact
     • Initial maintainer: @azulrk
