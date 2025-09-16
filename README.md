@@ -177,12 +177,11 @@ Make sure .env* files are ignored in .gitignore (already configured).
   pnpm --filter frontend add @supabase/supabase-js @supabase/ssr
 
 
- 3) License & conduct
+# 12) License & conduct
 • MIT(see LICENSE)
 • Code of Conduct in CODE_OF_CONDUCT.md
 • Contribution guidelines in CONTRIBUTING.md
 
-
- 4) Contact
+ # 13) Contact
     • Initial maintainer: @azulrk
     • Issues and PRs in this repo.
