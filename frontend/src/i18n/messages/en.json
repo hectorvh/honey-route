@@ -50,6 +50,25 @@
     "notAuthenticated": "You need to sign in.",
     "forbidden": "You don’t have access."
   },
+  "settings": {
+    "title": "Settings",
+    "sections": { "account": "Account", "preferences": "Preferences", "theme": "Theme" },
+    "profile": "Profile",
+    "profileHint": "Manage your profile",
+    "units": "Units",
+    "unitsHint": "Choose your preferred units",
+    "offline": "Offline Sync",
+    "offlineHint": "Sync data for offline use",
+    "privacy": "Privacy",
+    "privacyHint": "Manage your privacy settings",
+    "language": "Language",
+    "languageHint": "Interface language",
+    "dark": "Dark Mode",
+    "darkHint": "Switch to dark theme",
+    "en": "EN",
+    "es": "ES",
+    "signOut": "Sign out"
+  },
   "home": {
     "title": "My Apiaries",
     "capture": "Capture / Analyze",

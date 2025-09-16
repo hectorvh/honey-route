@@ -42,8 +42,28 @@
   },
   "common": {
     "back": "Atrás",
+    "other": "Other",
     "poweredBy": "Con tecnología de",
     "genericError": "Algo salió mal."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "sections": { "account": "Cuenta", "preferences": "Preferencias", "theme": "Tema" },
+    "profile": "Perfil",
+    "profileHint": "Gestiona tu perfil",
+    "units": "Unidades",
+    "unitsHint": "Elige tus unidades preferidas",
+    "offline": "Sincronización offline",
+    "offlineHint": "Sincroniza datos para usar sin conexión",
+    "privacy": "Privacidad",
+    "privacyHint": "Gestiona tu privacidad",
+    "language": "Idioma",
+    "languageHint": "Idioma de la interfaz",
+    "dark": "Modo oscuro",
+    "darkHint": "Cambiar al tema oscuro",
+    "en": "EN",
+    "es": "ES",
+    "signOut": "Cerrar sesión"
   },
   "auth": {
     "notAuthenticated": "Necesitas iniciar sesión.",

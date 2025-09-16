@@ -29,6 +29,7 @@ function hiveWord(count: number, locale: string) {
   const es = locale?.toLowerCase().startsWith('es');
   return es ? (count === 1 ? 'colmena' : 'colmenas') : count === 1 ? 'hive' : 'hives';
 }
+
 function HiveCount({ count }: { count: number }) {
   const { locale } = useI18n();
   return (
@@ -47,8 +48,10 @@ export default function HivesClient({ cards }: { cards: ApiaryCard[] }) {
       heroSrc={null}
       headerLeft={<BrandMark />}
       headerRight={<LangToggle />}
-      // Dejamos espacio para la barra inferior fija dentro del card
-      contentClassName="pb-28"
+      // 👇 nav fijo abajo dentro del CardShell
+      footer={<NavTab active="home" />}
+      // 👇 el contenido es scrollable; no hace falta gran padding inferior
+      contentClassName="pb-2"
     >
       <h1 className="text-[26px] font-extrabold tracking-tight">{t('home.title')}</h1>
 
@@ -59,7 +62,7 @@ export default function HivesClient({ cards }: { cards: ApiaryCard[] }) {
             className="relative h-40 w-full overflow-hidden rounded-2xl text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-amber-500"
             onClick={() => router.push(`/history/${c.id}`)}
           >
-            {/* Imagen ocupa TODO el card */}
+            {/* Imagen full-bleed */}
             <Image src={c.imageUrl} alt={c.name} fill className="object-cover" />
             {/* Degradado para legibilidad */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
@@ -75,6 +78,7 @@ export default function HivesClient({ cards }: { cards: ApiaryCard[] }) {
           </button>
         ))}
 
+        {/* CTA principal */}
         <Button
           className="mt-2 h-12 w-full rounded-2xl"
           size="lg"
@@ -86,7 +90,7 @@ export default function HivesClient({ cards }: { cards: ApiaryCard[] }) {
           </span>
         </Button>
 
-        {/* Powered by encima del nav */}
+        {/* Powered by (queda encima del nav fijo) */}
         <p className="mt-6 text-center text-xs text-neutral-500">
           <span className="text-neutral-400">{t('common.poweredBy')} </span>
           <span className="font-semibold tracking-wide">
@@ -94,11 +98,6 @@ export default function HivesClient({ cards }: { cards: ApiaryCard[] }) {
             <span className="brand-outline brand-ventus">Ventus</span>
           </span>
         </p>
-      </div>
-
-      {/* NAV anclado al fondo del card (nunca queda en medio) */}
-      <div className="absolute inset-x-0 bottom-0 px-6 pb-4">
-        <NavTab />
       </div>
     </CardShell>
   );
