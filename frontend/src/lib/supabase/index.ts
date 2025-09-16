@@ -1,2 +1,3 @@
+//frontend/src/lib/supabase/index.ts
 export { supabaseBrowser } from './client';
-export { createClient } from './server';
+export { supabaseServer } from './server';

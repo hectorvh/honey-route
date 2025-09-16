@@ -53,11 +53,11 @@ export default function LoginPage() {
       headerLeft={
         <div className="flex items-center gap-2">
           <Image
-            src="/images/miel.png"
-            alt="HoneyRoute logo"
-            width={20}
-            height={20}
-            className="rounded-sm"
+            src="/icons/logo-honeyroute-amber-1024.png"
+            width={34}
+            height={34}
+            alt="HoneyRoute"
+            style={{ height: 'auto' }} // si solo fijas width
           />
           <span className="text-base font-semibold">HoneyRoute</span>
         </div>
