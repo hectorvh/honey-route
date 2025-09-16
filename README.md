@@ -10,11 +10,7 @@ TL;DR (5 steps)
 
 # 0) Requirements: Node 20, pnpm 9, Git. (Docker optional)
 
-# 0) Requirements: Node 20, pnpm 9, Git. (Docker optional)
-
 corepack disable && npm i -g pnpm@9.7.0
-
-# 1) Install
 
 # 1) Install
 
@@ -22,11 +18,7 @@ pnpm install
 
 # 2) Generate scaffolds (if first time)
 
-# 2) Generate scaffolds (if first time)
-
 pnpm bootstrap
-
-# 3) Environment variables
 
 # 3) Environment variables
 
@@ -35,13 +27,9 @@ cp backend/.env.example backend/.env
 
 # 4) (Optional) Local services
 
-# 4) (Optional) Local services
-
 # brew install --cask docker && open -a Docker
 
 docker compose up -d
-
-# 5) Parallel development
 
 # 5) Parallel development
 
@@ -111,8 +99,6 @@ Note: We pinned Tailwind v3 for stability. (If someone installs v4 you’ll get 
        docker compose up -d
     8. Development
     9. Development
-
-    # Front + Back with Turbo
 
     # Front + Back with Turbo
 
@@ -225,14 +211,10 @@ Backend
 
 ## Authentication with Supabase
 
-## Authentication with Supabase
-
 This app uses [Supabase Auth](https://supabase.com/) for email/password and OAuth login.
 We kept a **mobile-first** and the **unified shell heigh\*.
 This app uses [Supabase Auth](https://supabase.com/) for email/password and OAuth login.
 We kept a **mobile-first** and the **unified shell heigh\*.
-
-### 1) Environment variable (Frontend)
 
 ### 1) Environment variable (Frontend)
 
@@ -252,12 +234,10 @@ Make sure .env\* files are ignored in .gitignore (already configured).
 3. Dependencies
    pnpm --filter frontend add @supabase/supabase-js @supabase/ssr
 
-⸻ 12) License & conduct
+12) License & conduct
 • MIT(see LICENSE)
 • Code of Conduct in CODE_OF_CONDUCT.md
 • Contribution guidelines in CONTRIBUTING.md
-
-⸻
 
 13. Contact
     • Initial maintainer: @azulrk
