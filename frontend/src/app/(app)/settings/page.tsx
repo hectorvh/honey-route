@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase/client';
-
 import CardShell from '@/components/shell/CardShell';
 import BrandMark from '@/components/BrandMark';
 import Button from '@/components/ui/Button';

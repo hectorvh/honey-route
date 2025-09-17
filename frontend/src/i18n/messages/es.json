@@ -42,8 +42,8 @@
   },
   "common": {
     "back": "Atrás",
+    "other": "Other",
     "poweredBy": "Con tecnología de",
-    "other": "Otros",
     "genericError": "Algo salió mal."
   },
   "auth": {
@@ -52,11 +52,7 @@
   },
   "settings": {
     "title": "Ajustes",
-    "sections": {
-      "account": "Cuenta",
-      "preferences": "Preferencias",
-      "theme": "Tema"
-    },
+    "sections": { "account": "Cuenta", "preferences": "Preferencias", "theme": "Tema" },
     "profile": "Perfil",
     "profileHint": "Gestiona tu perfil",
     "units": "Unidades",
@@ -96,5 +92,27 @@
     "locate": "Mi ubicación",
     "noGeo": "Geolocalización no disponible",
     "geoDenied": "Permiso denegado"
+  },
+  "camera": {
+    "title": "Cámara",
+    "flip": "Cambiar",
+    "capture": "Capturar",
+    "retake": "Repetir",
+    "analyze": "Analizar",
+    "tipsTitle": "Consejos para mejores resultados",
+    "tips": {
+      "light": "Buena luz natural/LED (evita sombras duras).",
+      "top": "Toma cenital, colmena centrada en el encuadre.",
+      "steady": "Mantén firme 2–3 s antes de capturar.",
+      "fill": "Que el panal/frames ocupen la mayor parte."
+    },
+    "errors": {
+      "insecure": "La cámara requiere HTTPS (usa el enlace de cloudflared).",
+      "noApi": "API de cámara no disponible en este dispositivo.",
+      "denied": "Permiso denegado. Revisa ajustes del navegador.",
+      "notFound": "No se encontró cámara.",
+      "generic": "Error al iniciar la cámara",
+      "analyze": "No se pudo iniciar el análisis"
+    }
   }
 }

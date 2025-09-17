@@ -52,11 +52,7 @@
   },
   "settings": {
     "title": "Settings",
-    "sections": {
-      "account": "Account",
-      "preferences": "Preferences",
-      "theme": "Theme"
-    },
+    "sections": { "account": "Account", "preferences": "Preferences", "theme": "Theme" },
     "profile": "Profile",
     "profileHint": "Manage your profile",
     "units": "Units",
@@ -96,5 +92,27 @@
     "locate": "Locate me",
     "noGeo": "Geolocation not available",
     "geoDenied": "Permission denied"
+  },
+  "camera": {
+    "title": "Camera",
+    "flip": "Flip",
+    "capture": "Capture",
+    "retake": "Retake",
+    "analyze": "Analyze",
+    "tipsTitle": "Tips for best results",
+    "tips": {
+      "light": "Good natural/LED light (avoid harsh shadows).",
+      "top": "Top-down shot, hive centered in the frame.",
+      "steady": "Hold steady 2–3s before capturing.",
+      "fill": "Fill the frame with comb/frames."
+    },
+    "errors": {
+      "insecure": "Camera requires HTTPS (use cloudflared link).",
+      "noApi": "Camera API not available on this device.",
+      "denied": "Permission denied. Check browser settings.",
+      "notFound": "No camera found.",
+      "generic": "Error starting camera",
+      "analyze": "Failed to start analysis"
+    }
   }
 }
