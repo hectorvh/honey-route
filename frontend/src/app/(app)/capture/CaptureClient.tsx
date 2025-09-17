@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import CardShell from '@/components/shell/CardShell';
 import BrandMark from '@/components/BrandMark';
 import LangToggle from '@/components/LangToggle';
-import Button from '@/components/ui/Button';
 import NavTab from '@/components/NavTab';
+import BackBtn from '@/components/BackBtn';
 import { useI18n } from '@/i18n/I18nProvider';
 
 type Facing = 'environment' | 'user';
@@ -16,8 +16,6 @@ type TorchCaps = MediaTrackCapabilities & { torch?: boolean };
 type TorchConstraints = MediaTrackConstraints & {
   advanced?: Array<MediaTrackConstraintSet & { torch?: boolean }>;
 };
-
-// Navigator con soporte opcional a webkitGetUserMedia (iOS antiguos / UIWebView)
 interface NavigatorWithWebkit extends Navigator {
   webkitGetUserMedia?: (
     constraints: MediaStreamConstraints,
@@ -26,36 +24,15 @@ interface NavigatorWithWebkit extends Navigator {
   ) => void;
 }
 
-// helper: fallback de traducción si t(key) === key
 function tx(t: (k: string) => string, key: string, fallback: string) {
   const v = t(key);
   return v === key ? fallback : v;
 }
-
-function BackBtn() {
-  const router = useRouter();
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        if (typeof window !== 'undefined' && window.history.length > 1) router.back();
-        else router.push('/hives');
-      }}
-      aria-label="Back"
-      className="grid h-9 w-9 place-items-center rounded-full bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
-    >
-      <span className="text-lg leading-none">←</span>
-    </button>
-  );
-}
-
 function isSecureOrigin() {
   if (typeof window === 'undefined') return false;
   const { protocol, hostname } = window.location;
   return protocol === 'https:' || hostname === 'localhost' || hostname === '127.0.0.1';
 }
-
-// Compat: usa mediaDevices o webkitGetUserMedia sin `any`
 async function getUserMediaCompat(constraints: MediaStreamConstraints): Promise<MediaStream> {
   if (navigator.mediaDevices?.getUserMedia) {
     return navigator.mediaDevices.getUserMedia(constraints);
@@ -68,8 +45,6 @@ async function getUserMediaCompat(constraints: MediaStreamConstraints): Promise<
   }
   throw new DOMException('Camera API not available', 'NotSupportedError');
 }
-
-// Extrae info de error de forma segura (sin `any`)
 function extractErrorInfo(e: unknown): { name?: string; message?: string } {
   if (e instanceof DOMException || e instanceof Error) {
     return { name: e.name, message: e.message };
@@ -81,6 +56,28 @@ function extractErrorInfo(e: unknown): { name?: string; message?: string } {
     return { name, message };
   }
   return {};
+}
+
+/** Botón solo con ícono (blanco), sin texto visible */
+function IconBtn(props: {
+  src: string;
+  label: string; // solo para aria-label
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  const { src, label, onClick, disabled } = props;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      className="grid h-12 w-12 place-items-center rounded-2xl bg-neutral-900 ring-1 ring-black/5 hover:bg-neutral-800 disabled:opacity-50"
+    >
+      {/* blanco forzado: filtros CSS */}
+      <Image src={src} alt="" width={22} height={22} className="filter invert brightness-0" />
+    </button>
+  );
 }
 
 export default function CaptureClient() {
@@ -136,9 +133,7 @@ export default function CaptureClient() {
       if (!video) return;
 
       video.srcObject = stream;
-      await video.play().catch(() => {
-        /* Safari podría requerir interacción del usuario */
-      });
+      await video.play().catch(() => {});
 
       const track = stream.getVideoTracks()[0];
       const caps = (track.getCapabilities?.() ?? {}) as TorchCaps;
@@ -148,7 +143,6 @@ export default function CaptureClient() {
       setError(null);
     } catch (e: unknown) {
       const { name, message } = extractErrorInfo(e);
-
       if (name === 'NotSupportedError') {
         setError(tx(t, 'camera.errors.noApi', 'Camera API not available on this device.'));
       } else if (name === 'NotAllowedError' || name === 'SecurityError') {
@@ -178,9 +172,7 @@ export default function CaptureClient() {
       const torchConstraints: TorchConstraints = { advanced: [{ torch: !torchOn }] };
       await track.applyConstraints(torchConstraints);
       setTorchOn((v) => !v);
-    } catch {
-      // algunos navegadores no permiten activar flash por código
-    }
+    } catch {}
   }
 
   function switchCamera() {
@@ -210,9 +202,7 @@ export default function CaptureClient() {
         try {
           const dataURL = c.toDataURL('image/jpeg', 0.9);
           sessionStorage.setItem('lastCaptureDataURL', dataURL);
-        } catch {
-          /* quota/full */
-        }
+        } catch {}
       },
       'image/jpeg',
       0.9
@@ -222,10 +212,21 @@ export default function CaptureClient() {
   function retake() {
     if (shotURL) URL.revokeObjectURL(shotURL);
     setShotURL(null);
+    void startStream(facing);
   }
 
   function goAnalyze() {
-    router.push('/analysis'); // ajusta a tu flujo real
+    if (shotURL) {
+      try {
+        const payload = { images: [shotURL], video: null as string | null };
+        sessionStorage.setItem('analysisPayload', JSON.stringify(payload));
+      } catch {}
+    }
+    router.push('/analysis');
+  }
+
+  function openUploadScreen() {
+    router.push('/analysis/upload');
   }
 
   return (
@@ -237,12 +238,13 @@ export default function CaptureClient() {
         </div>
       }
       headerRight={<LangToggle />}
-      contentClassName="pb-24"
+      contentClassName="pb-28"
       footer={<NavTab active="home" />}
     >
       <h1 className="text-[22px] font-bold">{tx(t, 'home.capture', 'Capture / Analyze')}</h1>
 
       <div className="mt-4">
+        {/* Visor */}
         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-black/5">
           {!shotURL && (
             <video
@@ -253,7 +255,6 @@ export default function CaptureClient() {
               className="absolute inset-0 h-full w-full object-cover"
             />
           )}
-
           {shotURL && (
             <Image
               src={shotURL}
@@ -263,7 +264,6 @@ export default function CaptureClient() {
               sizes="(max-width: 420px) 100vw, 420px"
             />
           )}
-
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <div className="h-52 w-40 rounded-xl border-2 border-amber-400/70 [border-style:dashed]" />
           </div>
@@ -271,48 +271,51 @@ export default function CaptureClient() {
 
         {error && <p className="mt-2 text-sm text-rose-400">{error}</p>}
 
+        {/* Controles centrados (solo íconos blancos) */}
         {!shotURL ? (
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <Button
+          <div className="mt-5 flex items-center justify-center gap-5">
+            <IconBtn
+              src="/images/flip.png"
+              label={tx(t, 'camera.flip', 'Flip')}
               onClick={switchCamera}
-              className="h-11 flex-1 rounded-xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
-            >
-              {tx(t, 'camera.flip', 'Flip')}
-            </Button>
+            />
 
+            {/* Shutter central */}
             <button
+              type="button"
               onClick={capture}
               className="grid h-16 w-16 place-items-center rounded-full border-4 border-white/40 bg-amber-400 text-black shadow-lg hover:bg-amber-300"
               aria-label={tx(t, 'camera.capture', 'Capture')}
             >
-              ●
+              <Image src="/images/camera.png" alt="" width={22} height={22} />
             </button>
 
-            {torchCapable ? (
-              <Button
-                onClick={toggleTorch}
-                className="h-11 flex-1 rounded-xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
-              >
-                {torchOn ? 'Flash off' : 'Flash on'}
-              </Button>
-            ) : (
-              <div className="flex-1" />
-            )}
+            <IconBtn
+              src="/images/galery.png" /* si el archivo es 'gallery.png', cambia aquí */
+              label={tx(t, 'analysis.upload.title', 'Add Images')}
+              onClick={openUploadScreen}
+            />
           </div>
         ) : (
-          <div className="mt-4 flex items-center gap-3">
-            <Button
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <button
+              type="button"
               onClick={retake}
-              className="h-12 flex-1 rounded-xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
+              className="h-12 rounded-2xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
             >
               {tx(t, 'camera.retake', 'Retake')}
-            </Button>
-            <Button variant="primary" onClick={goAnalyze} className="h-12 flex-1 rounded-xl">
+            </button>
+            <button
+              type="button"
+              onClick={goAnalyze}
+              className="h-12 rounded-2xl bg-amber-400 font-semibold text-black hover:bg-amber-300"
+            >
               {tx(t, 'camera.analyze', 'Analyze')}
-            </Button>
+            </button>
           </div>
         )}
 
+        {/* Tip box */}
         <div className="mt-5 rounded-2xl bg-neutral-900 p-4 text-sm text-neutral-300 ring-1 ring-black/5">
           <p className="mb-2 font-semibold">{tx(t, 'camera.tipsTitle', 'Tips for best results')}</p>
           <ul className="list-disc space-y-1 pl-5">

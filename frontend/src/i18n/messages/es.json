@@ -30,26 +30,17 @@
     "hiveTypeLabel": "Tipo de colmena",
     "hiveTypePh": "Selecciona el tipo",
     "createCta": "Crear apiario",
-    "types": {
-      "langstroth": "Langstroth",
-      "topbar": "Top-bar",
-      "warre": "Warré"
-    },
-    "errors": {
-      "nameReq": "Ingresa un nombre.",
-      "nameRequired": "Ingresa un nombre."
-    }
+    "types": { "langstroth": "Langstroth", "topbar": "Top-bar", "warre": "Warré" },
+    "errors": { "nameReq": "Ingresa un nombre.", "nameRequired": "Ingresa un nombre." }
   },
   "common": {
     "back": "Atrás",
     "other": "Other",
     "poweredBy": "Con tecnología de",
-    "genericError": "Algo salió mal."
+    "genericError": "Algo salió mal.",
+    "saved": "Guardado"
   },
-  "auth": {
-    "notAuthenticated": "Necesitas iniciar sesión.",
-    "forbidden": "No tienes acceso."
-  },
+  "auth": { "notAuthenticated": "Necesitas iniciar sesión.", "forbidden": "No tienes acceso." },
   "settings": {
     "title": "Ajustes",
     "sections": { "account": "Cuenta", "preferences": "Preferencias", "theme": "Tema" },
@@ -73,17 +64,8 @@
     "title": "Mis apiarios",
     "capture": "Capturar / Analizar",
     "hivesCount": "{{count}} colmenas",
-    "status": {
-      "healthy": "Saludable",
-      "attention": "Requiere atención",
-      "critical": "Crítico"
-    },
-    "nav": {
-      "home": "Inicio",
-      "alerts": "Alertas",
-      "map": "Mapa",
-      "settings": "Ajustes"
-    }
+    "status": { "healthy": "Saludable", "attention": "Requiere atención", "critical": "Crítico" },
+    "nav": { "home": "Inicio", "alerts": "Alertas", "map": "Mapa", "settings": "Ajustes" }
   },
   "map": {
     "title": "Mapa",
@@ -96,9 +78,12 @@
   "camera": {
     "title": "Cámara",
     "flip": "Cambiar",
+    "gallery": "Subir",
     "capture": "Capturar",
     "retake": "Repetir",
     "analyze": "Analizar",
+    "torchOn": "Encender flash",
+    "torchOff": "Apagar flash",
     "tipsTitle": "Consejos para mejores resultados",
     "tips": {
       "light": "Buena luz natural/LED (evita sombras duras).",
@@ -113,6 +98,47 @@
       "notFound": "No se encontró cámara.",
       "generic": "Error al iniciar la cámara",
       "analyze": "No se pudo iniciar el análisis"
+    }
+  },
+  "analysis": {
+    "upload": {
+      "title": "Agregar imágenes",
+      "subtitle": "Selecciona hasta 5 imágenes claras y bien iluminadas.",
+      "addImage": "Agregar imagen",
+      "addVideo": "Agregar video (opcional)",
+      "confirm": "Confirmar carga"
+    },
+    "loading": {
+      "title": "Análisis",
+      "main": "Analizando tus imágenes...",
+      "hint": "Espera mientras calculamos el riesgo y las detecciones.",
+      "noPayload": "No hay imágenes para analizar."
+    },
+    "result": {
+      "title": "Resultado del análisis",
+      "riskTitle": "Nivel de riesgo",
+      "risk": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
+      "detections": "Detecciones",
+      "sev": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
+      "none": "No se detectaron problemas.",
+      "seeRecs": "Ver recomendaciones",
+      "logAction": "Registrar acción"
+    },
+    "recs": {
+      "title": "Recomendaciones",
+      "inspectTitle": "Inspeccionar salud de la colmena",
+      "inspectBody": "Busca enfermedad/plagas; asegura ventilación y espacio.",
+      "foodTitle": "Revisar reservas de alimento",
+      "foodBody": "Asegura suficiente alimento; suplementa si es necesario.",
+      "queenTitle": "Evaluar salud de la reina",
+      "queenBody": "Busca un patrón de cría consistente.",
+      "spaceTitle": "Gestionar espacio",
+      "spaceBody": "Agrega/retira alzas para evitar enjambrazón.",
+      "varroaTitle": "Tratamiento de Varroa",
+      "varroaBody": "Aplica según temporada y condición de la colmena.",
+      "attach": "Adjuntar evidencia (fotos/documentos)",
+      "save": "Guardar cambios",
+      "saved": "Cambios guardados"
     }
   }
 }

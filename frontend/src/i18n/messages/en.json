@@ -30,26 +30,17 @@
     "hiveTypeLabel": "Hive Type",
     "hiveTypePh": "Select Hive Type",
     "createCta": "Create Apiary",
-    "types": {
-      "langstroth": "Langstroth",
-      "topbar": "Top-bar",
-      "warre": "Warré"
-    },
-    "errors": {
-      "nameReq": "Please enter a name.",
-      "nameRequired": "Please enter a name."
-    }
+    "types": { "langstroth": "Langstroth", "topbar": "Top-bar", "warre": "Warré" },
+    "errors": { "nameReq": "Please enter a name.", "nameRequired": "Please enter a name." }
   },
   "common": {
     "back": "Back",
     "poweredBy": "Powered by",
     "other": "Other",
-    "genericError": "Something went wrong."
+    "genericError": "Something went wrong.",
+    "saved": "Saved"
   },
-  "auth": {
-    "notAuthenticated": "You need to sign in.",
-    "forbidden": "You don’t have access."
-  },
+  "auth": { "notAuthenticated": "You need to sign in.", "forbidden": "You don’t have access." },
   "settings": {
     "title": "Settings",
     "sections": { "account": "Account", "preferences": "Preferences", "theme": "Theme" },
@@ -73,17 +64,8 @@
     "title": "My Apiaries",
     "capture": "Capture / Analyze",
     "hivesCount": "{{count}} hives",
-    "status": {
-      "healthy": "Healthy",
-      "attention": "Needs Attention",
-      "critical": "Critical"
-    },
-    "nav": {
-      "home": "Home",
-      "alerts": "Alerts",
-      "map": "Map",
-      "settings": "Settings"
-    }
+    "status": { "healthy": "Healthy", "attention": "Needs Attention", "critical": "Critical" },
+    "nav": { "home": "Home", "alerts": "Alerts", "map": "Map", "settings": "Settings" }
   },
   "map": {
     "title": "Map",
@@ -96,9 +78,12 @@
   "camera": {
     "title": "Camera",
     "flip": "Flip",
+    "gallery": "Upload",
     "capture": "Capture",
     "retake": "Retake",
     "analyze": "Analyze",
+    "torchOn": "Flash on",
+    "torchOff": "Flash off",
     "tipsTitle": "Tips for best results",
     "tips": {
       "light": "Good natural/LED light (avoid harsh shadows).",
@@ -113,6 +98,47 @@
       "notFound": "No camera found.",
       "generic": "Error starting camera",
       "analyze": "Failed to start analysis"
+    }
+  },
+  "analysis": {
+    "upload": {
+      "title": "Add Images",
+      "subtitle": "Select up to 5 clear, well-lit images.",
+      "addImage": "Add Image",
+      "addVideo": "Add video (optional)",
+      "confirm": "Confirm Upload"
+    },
+    "loading": {
+      "title": "Analysis",
+      "main": "Analyzing your images...",
+      "hint": "Please wait while we compute risk and detections.",
+      "noPayload": "No images to analyze."
+    },
+    "result": {
+      "title": "Analysis Result",
+      "riskTitle": "Risk Level",
+      "risk": { "low": "Low", "medium": "Medium", "high": "High" },
+      "detections": "Detections",
+      "sev": { "low": "Low", "medium": "Medium", "high": "High" },
+      "none": "No issues detected.",
+      "seeRecs": "See recommendations",
+      "logAction": "Log action"
+    },
+    "recs": {
+      "title": "Recommendations",
+      "inspectTitle": "Inspect Hive Health",
+      "inspectBody": "Check for disease/pests, ensure ventilation and space.",
+      "foodTitle": "Check Food Stores",
+      "foodBody": "Ensure enough food; supplement if needed.",
+      "queenTitle": "Assess Queen Health",
+      "queenBody": "Look for a consistent brood pattern.",
+      "spaceTitle": "Manage Hive Space",
+      "spaceBody": "Add/remove supers to prevent swarming.",
+      "varroaTitle": "Varroa Mite Treatment",
+      "varroaBody": "Treat appropriately based on season and hive condition.",
+      "attach": "Attach evidence (photos/documents)",
+      "save": "Save changes",
+      "saved": "Changes saved"
     }
   }
 }
