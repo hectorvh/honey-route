@@ -1,12 +1,16 @@
-import { NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase/server';
+// No usar Supabase. Simplemente redirige a /login.
+// Evita prerender y evita que falle en build.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const code = url.searchParams.get('code');
-  if (code) {
-    const supabase = await supabaseServer();
-    await supabase.auth.exchangeCodeForSession(code);
-  }
-  return NextResponse.redirect(new URL('/hives', url.origin));
+  url.pathname = '/login';
+  // Anota que es “local” (opcional)
+  if (!url.searchParams.has('provider')) url.searchParams.set('provider', 'local');
+  return Response.redirect(url, 302);
+}
+
+export async function POST(request: Request) {
+  return GET(request);
 }
