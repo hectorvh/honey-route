@@ -45,6 +45,12 @@ export default function ResultClient() {
         ? (t('analysis.result.risk.medium') ?? 'Medium')
         : (t('analysis.result.risk.low') ?? 'Low');
 
+  // ✅ antes faltaba esta función
+  function goLog() {
+    // preserva los parámetros actuales (?jobId=..., ?hiveId=..., etc.)
+    window.location.href = `/analysis/history${location.search}`;
+  }
+
   return (
     <CardShell
       headerLeft={
@@ -106,7 +112,10 @@ export default function ResultClient() {
           >
             {t('analysis.result.seeRecs') ?? 'See recommendations'}
           </Button>
-          <Button className="bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800">
+          <Button
+            className="bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
+            onClick={goLog}
+          >
             {t('analysis.result.logAction') ?? 'Log action'}
           </Button>
         </div>

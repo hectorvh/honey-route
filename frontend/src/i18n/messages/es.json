@@ -30,17 +30,26 @@
     "hiveTypeLabel": "Tipo de colmena",
     "hiveTypePh": "Selecciona el tipo",
     "createCta": "Crear apiario",
-    "types": { "langstroth": "Langstroth", "topbar": "Top-bar", "warre": "Warré" },
-    "errors": { "nameReq": "Ingresa un nombre.", "nameRequired": "Ingresa un nombre." }
+    "types": {
+      "langstroth": "Langstroth",
+      "topbar": "Top-bar",
+      "warre": "Warré"
+    },
+    "errors": {
+      "nameReq": "Ingresa un nombre.",
+      "nameRequired": "Ingresa un nombre."
+    }
   },
   "common": {
     "back": "Atrás",
-    "other": "Other",
+    "other": "Otros",
     "poweredBy": "Con tecnología de",
-    "genericError": "Algo salió mal.",
-    "saved": "Guardado"
+    "genericError": "Algo salió mal."
   },
-  "auth": { "notAuthenticated": "Necesitas iniciar sesión.", "forbidden": "No tienes acceso." },
+  "auth": {
+    "notAuthenticated": "Necesitas iniciar sesión.",
+    "forbidden": "No tienes acceso."
+  },
   "settings": {
     "title": "Ajustes",
     "sections": { "account": "Cuenta", "preferences": "Preferencias", "theme": "Tema" },
@@ -64,8 +73,17 @@
     "title": "Mis apiarios",
     "capture": "Capturar / Analizar",
     "hivesCount": "{{count}} colmenas",
-    "status": { "healthy": "Saludable", "attention": "Requiere atención", "critical": "Crítico" },
-    "nav": { "home": "Inicio", "alerts": "Alertas", "map": "Mapa", "settings": "Ajustes" }
+    "status": {
+      "healthy": "Saludable",
+      "attention": "Requiere atención",
+      "critical": "Crítico"
+    },
+    "nav": {
+      "home": "Inicio",
+      "alerts": "Alertas",
+      "map": "Mapa",
+      "settings": "Ajustes"
+    }
   },
   "map": {
     "title": "Mapa",
@@ -82,8 +100,6 @@
     "capture": "Capturar",
     "retake": "Repetir",
     "analyze": "Analizar",
-    "torchOn": "Encender flash",
-    "torchOff": "Apagar flash",
     "tipsTitle": "Consejos para mejores resultados",
     "tips": {
       "light": "Buena luz natural/LED (evita sombras duras).",
@@ -139,6 +155,35 @@
       "attach": "Adjuntar evidencia (fotos/documentos)",
       "save": "Guardar cambios",
       "saved": "Cambios guardados"
+    }
+  },
+  "history": {
+    "title": "Historial",
+    "kpi": "Indicadores clave",
+    "kpiTotal": "Inspecciones totales",
+    "kpiHealth": "Salud promedio de la colmena",
+    "kpiHoney": "Producción de miel",
+    "log": "Registro de acciones",
+    "empty": "Aún no hay acciones registradas.",
+    "add": "Agregar acción",
+    "add.toast": "Demo: formulario de acción próximamente",
+    "time": {
+      "now": "Justo ahora",
+      "m": "Hace {{count}} min",
+      "h": "Hace {{count}} h",
+      "d": "Hace {{count}} días"
+    },
+    "types": {
+      "inspection": "Inspección de colmena",
+      "harvest": "Cosecha de miel",
+      "queen": "Introducción de reina",
+      "pest": "Control de plagas"
+    },
+    "notes": {
+      "inspection": "Revisión general; sin problemas.",
+      "harvest": "Cosecha ligera del alza superior.",
+      "queen": "Introducción de reina realizada.",
+      "pest": "Vaporización con AO."
     }
   }
 }

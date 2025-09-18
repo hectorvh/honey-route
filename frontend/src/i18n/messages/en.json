@@ -30,17 +30,26 @@
     "hiveTypeLabel": "Hive Type",
     "hiveTypePh": "Select Hive Type",
     "createCta": "Create Apiary",
-    "types": { "langstroth": "Langstroth", "topbar": "Top-bar", "warre": "Warré" },
-    "errors": { "nameReq": "Please enter a name.", "nameRequired": "Please enter a name." }
+    "types": {
+      "langstroth": "Langstroth",
+      "topbar": "Top-bar",
+      "warre": "Warré"
+    },
+    "errors": {
+      "nameReq": "Please enter a name.",
+      "nameRequired": "Please enter a name."
+    }
   },
   "common": {
     "back": "Back",
     "poweredBy": "Powered by",
     "other": "Other",
-    "genericError": "Something went wrong.",
-    "saved": "Saved"
+    "genericError": "Something went wrong."
   },
-  "auth": { "notAuthenticated": "You need to sign in.", "forbidden": "You don’t have access." },
+  "auth": {
+    "notAuthenticated": "You need to sign in.",
+    "forbidden": "You don’t have access."
+  },
   "settings": {
     "title": "Settings",
     "sections": { "account": "Account", "preferences": "Preferences", "theme": "Theme" },
@@ -64,8 +73,17 @@
     "title": "My Apiaries",
     "capture": "Capture / Analyze",
     "hivesCount": "{{count}} hives",
-    "status": { "healthy": "Healthy", "attention": "Needs Attention", "critical": "Critical" },
-    "nav": { "home": "Home", "alerts": "Alerts", "map": "Map", "settings": "Settings" }
+    "status": {
+      "healthy": "Healthy",
+      "attention": "Needs Attention",
+      "critical": "Critical"
+    },
+    "nav": {
+      "home": "Home",
+      "alerts": "Alerts",
+      "map": "Map",
+      "settings": "Settings"
+    }
   },
   "map": {
     "title": "Map",
@@ -82,8 +100,6 @@
     "capture": "Capture",
     "retake": "Retake",
     "analyze": "Analyze",
-    "torchOn": "Flash on",
-    "torchOff": "Flash off",
     "tipsTitle": "Tips for best results",
     "tips": {
       "light": "Good natural/LED light (avoid harsh shadows).",
@@ -136,9 +152,38 @@
       "spaceBody": "Add/remove supers to prevent swarming.",
       "varroaTitle": "Varroa Mite Treatment",
       "varroaBody": "Treat appropriately based on season and hive condition.",
-      "attach": "Attach evidence (photos/documents)",
-      "save": "Save changes",
+      "attach": "Attach evidence (photos/docs)",
+      "save": "Save Changes",
       "saved": "Changes saved"
+    }
+  },
+  "history": {
+    "title": "History",
+    "kpi": "Key Performance Indicators",
+    "kpiTotal": "Total Inspections",
+    "kpiHealth": "Average Hive Health",
+    "kpiHoney": "Honey Production",
+    "log": "Action Log",
+    "empty": "No actions recorded yet.",
+    "add": "Add action",
+    "add.toast": "Demo: action form coming soon",
+    "time": {
+      "now": "Just now",
+      "m": "{{count}} min ago",
+      "h": "{{count}} h ago",
+      "d": "{{count}} days ago"
+    },
+    "types": {
+      "inspection": "Hive Inspection",
+      "harvest": "Honey Harvest",
+      "queen": "Queen Introduction",
+      "pest": "Pest Control"
+    },
+    "notes": {
+      "inspection": "General check; no issues.",
+      "harvest": "Light harvest from top super.",
+      "queen": "Queen introduction completed.",
+      "pest": "OA vaporization."
     }
   }
 }

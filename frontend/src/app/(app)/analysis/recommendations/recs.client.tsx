@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRef, useState } from 'react';
 import CardShell from '@/components/shell/CardShell';
 import BrandMark from '@/components/BrandMark';
@@ -89,7 +90,6 @@ export default function RecommendationsPage() {
   };
 
   const save = async () => {
-    // Si tienes endpoint real, cámbialo aquí por un POST.
     try {
       const payload = {
         selected: sel,
@@ -100,11 +100,9 @@ export default function RecommendationsPage() {
         })),
       };
       sessionStorage.setItem('recommendationsDraft', JSON.stringify(payload));
-    } catch {
-      // noop
-    }
-    // ✔ navega al resultado del análisis
-    router.replace('/analysis/result');
+    } catch {}
+    // vuelve al resultado
+    router.replace(`/analysis/result${location.search}`);
   };
 
   return (
@@ -164,13 +162,14 @@ export default function RecommendationsPage() {
         />
       </div>
 
-      {/* Adjuntos */}
+      {/* Adjuntos (icono de archivo blanco) */}
       <button
         type="button"
         onClick={attach}
-        className="mt-5 w-full rounded-2xl px-4 py-3 text-left text-sm text-neutral-300 ring-1 ring-black/5 hover:bg-neutral-900"
+        className="mt-5 flex w-full items-center gap-2 rounded-2xl px-4 py-3 text-left text-sm text-neutral-300 ring-1 ring-black/5 hover:bg-neutral-900"
       >
-        + {L(t, 'analysis.recs.attach', 'Attach evidence (photos/documents)')}
+        <Image src="/images/file.png" alt="" width={16} height={16} />
+        <span>{L(t, 'analysis.recs.attach', 'Attach evidence (photos/documents)')}</span>
       </button>
       <input
         ref={fileRef}
