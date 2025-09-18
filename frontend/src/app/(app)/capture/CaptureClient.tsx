@@ -1,3 +1,4 @@
+// frontend/src/app/(app)/capture/CaptureClient.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -12,10 +13,7 @@ import BackBtn from '@/components/BackBtn';
 import { useI18n } from '@/i18n/I18nProvider';
 
 type Facing = 'environment' | 'user';
-type TorchCaps = MediaTrackCapabilities & { torch?: boolean };
-type TorchConstraints = MediaTrackConstraints & {
-  advanced?: Array<MediaTrackConstraintSet & { torch?: boolean }>;
-};
+
 interface NavigatorWithWebkit extends Navigator {
   webkitGetUserMedia?: (
     constraints: MediaStreamConstraints,
@@ -61,7 +59,7 @@ function extractErrorInfo(e: unknown): { name?: string; message?: string } {
 /** Botón solo con ícono (blanco), sin texto visible */
 function IconBtn(props: {
   src: string;
-  label: string; // solo para aria-label
+  label: string; // aria-label
   onClick: () => void;
   disabled?: boolean;
 }) {
@@ -74,8 +72,8 @@ function IconBtn(props: {
       aria-label={label}
       className="grid h-12 w-12 place-items-center rounded-2xl bg-neutral-900 ring-1 ring-black/5 hover:bg-neutral-800 disabled:opacity-50"
     >
-      {/* blanco forzado: filtros CSS */}
-      <Image src={src} alt="" width={22} height={22} className="filter invert brightness-0" />
+      {/* blanco forzado */}
+      <Image src={src} alt="" width={22} height={22} className="invert" />
     </button>
   );
 }
@@ -91,8 +89,6 @@ export default function CaptureClient() {
   const [facing, setFacing] = useState<Facing>('environment');
   const [shotURL, setShotURL] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [torchOn, setTorchOn] = useState(false);
-  const [torchCapable, setTorchCapable] = useState(false);
 
   useEffect(() => {
     void startStream(facing);
@@ -135,11 +131,6 @@ export default function CaptureClient() {
       video.srcObject = stream;
       await video.play().catch(() => {});
 
-      const track = stream.getVideoTracks()[0];
-      const caps = (track.getCapabilities?.() ?? {}) as TorchCaps;
-      setTorchCapable(Boolean(caps.torch));
-      setTorchOn(false);
-
       setError(null);
     } catch (e: unknown) {
       const { name, message } = extractErrorInfo(e);
@@ -163,16 +154,6 @@ export default function CaptureClient() {
       s.getTracks().forEach((tr) => tr.stop());
       streamRef.current = null;
     }
-  }
-
-  async function toggleTorch() {
-    if (!torchCapable || !streamRef.current) return;
-    const track = streamRef.current.getVideoTracks()[0];
-    try {
-      const torchConstraints: TorchConstraints = { advanced: [{ torch: !torchOn }] };
-      await track.applyConstraints(torchConstraints);
-      setTorchOn((v) => !v);
-    } catch {}
   }
 
   function switchCamera() {
@@ -255,6 +236,7 @@ export default function CaptureClient() {
               className="absolute inset-0 h-full w-full object-cover"
             />
           )}
+
           {shotURL && (
             <Image
               src={shotURL}
@@ -262,8 +244,10 @@ export default function CaptureClient() {
               fill
               className="object-cover"
               sizes="(max-width: 420px) 100vw, 420px"
+              unoptimized
             />
           )}
+
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <div className="h-52 w-40 rounded-xl border-2 border-amber-400/70 [border-style:dashed]" />
           </div>
@@ -290,8 +274,9 @@ export default function CaptureClient() {
               <Image src="/images/camera.png" alt="" width={22} height={22} />
             </button>
 
+            {/* OJO: tu archivo es galery.png */}
             <IconBtn
-              src="/images/gallery.png" /* si el archivo es 'gallery.png', cambia aquí */
+              src="/images/gallery.png"
               label={tx(t, 'analysis.upload.title', 'Add Images')}
               onClick={openUploadScreen}
             />
