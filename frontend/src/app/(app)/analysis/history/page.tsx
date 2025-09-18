@@ -1,23 +1,14 @@
-import { redirect } from 'next/navigation';
-import { supabaseServer } from '@/lib/supabase/server';
-import { listHistory } from '@/data/actions.server';
 import HistoryClient from './HistoryClient';
+import { listHistoryMock } from '@/data/history.mock';
 
 export default async function HistoryPage({
   searchParams,
 }: {
-  searchParams?: { hiveId?: string };
+  searchParams?: Promise<{ hiveId?: string }>;
 }) {
-  const supabase = await supabaseServer();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
+  const sp = (await searchParams) ?? {};
+  const hiveId = sp.hiveId ?? null;
 
-  // Opcional: filtra por apiario si viene de /analysis/result?hiveId=...
-  const hiveId = searchParams?.hiveId ?? null;
-
-  const { kpis, entries, hiveName } = await listHistory(session.user.id, hiveId);
-
+  const { kpis, entries, hiveName } = await listHistoryMock('demo-user', hiveId);
   return <HistoryClient kpis={kpis} entries={entries} hiveName={hiveName ?? undefined} />;
 }

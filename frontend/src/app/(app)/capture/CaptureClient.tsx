@@ -291,7 +291,7 @@ export default function CaptureClient() {
             </button>
 
             <IconBtn
-              src="/images/galery.png" /* si el archivo es 'gallery.png', cambia aquí */
+              src="/images/gallery.png" /* si el archivo es 'gallery.png', cambia aquí */
               label={tx(t, 'analysis.upload.title', 'Add Images')}
               onClick={openUploadScreen}
             />
