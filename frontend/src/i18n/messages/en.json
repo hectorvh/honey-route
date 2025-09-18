@@ -243,5 +243,23 @@
     "enable": "Grant push permission",
     "notSupported": "Push notifications are not supported on this device/browser.",
     "denied": "Permission was not granted."
+  },
+  "alerts": {
+    "sev": { "high": "High", "medium": "Medium", "low": "Low" },
+    "time": {
+      "now": "now",
+      "m": "{{count}}m",
+      "h": "{{count}}h",
+      "d": "{{count}}d"
+    },
+    "detail": {
+      "title": "Alert Details",
+      "notFound": "Alert not found",
+      "cause": "Cause",
+      "linkedHive": "Linked Hive",
+      "goHive": "Go to Hive",
+      "resolve": "Mark as Resolved",
+      "resolvedToast": "Marked as resolved"
+    }
   }
 }

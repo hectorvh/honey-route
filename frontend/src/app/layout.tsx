@@ -1,6 +1,7 @@
 // frontend/src/app/layout.tsx
 import './globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
+import 'leaflet/dist/leaflet.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

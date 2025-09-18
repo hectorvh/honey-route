@@ -249,5 +249,23 @@
     "enable": "Conceder permiso de push",
     "notSupported": "Las notificaciones push no son compatibles en este dispositivo/navegador.",
     "denied": "No se concedió el permiso."
+  },
+  "alerts": {
+    "sev": { "high": "Alta", "medium": "Media", "low": "Baja" },
+    "time": {
+      "now": "ahora",
+      "m": "hace {{count}} min",
+      "h": "hace {{count}} h",
+      "d": "hace {{count}} d"
+    },
+    "detail": {
+      "title": "Detalle de alerta",
+      "notFound": "Alerta no encontrada",
+      "cause": "Causa",
+      "linkedHive": "Colmena vinculada",
+      "goHive": "Ir a la colmena",
+      "resolve": "Marcar como resuelta",
+      "resolvedToast": "Marcada como resuelta"
+    }
   }
 }
