@@ -1,4 +1,4 @@
-// frontend/src/app/(app)/hives/[apiaryId]/HiveDetailClient.tsx
+// frontend/src/app/(app)/apiaries/[apiaryId]/ApiaryDetailClient.tsx
 'use client';
 
 import Image from 'next/image';
@@ -42,13 +42,44 @@ function loadApiary(apiaryId: string) {
 function loadHives(apiaryId: string): Hive[] {
   try {
     const raw = localStorage.getItem('hr.hives');
-    const arr = raw ? (JSON.parse(raw) as Hive[]) : [];
-    return arr.filter((h) => h.apiary_id === apiaryId);
+    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+
+    if (!Array.isArray(parsed)) return [];
+
+    const out: Hive[] = [];
+    for (const item of parsed) {
+      if (typeof item !== 'object' || item === null) continue;
+      const o = item as Record<string, unknown>;
+
+      // Normaliza el campo del apiario (acepta apiary_id o apiaryId)
+      const apiaryForItem =
+        typeof o.apiary_id === 'string'
+          ? (o.apiary_id as string)
+          : typeof o.apiaryId === 'string'
+            ? (o.apiaryId as string)
+            : undefined;
+
+      if (apiaryForItem !== apiaryId) continue;
+
+      // Valida campos mínimos
+      if (typeof o.id !== 'string' || typeof o.label !== 'string') continue;
+
+      const lat = typeof o.lat === 'number' ? o.lat : undefined;
+      const lng = typeof o.lng === 'number' ? o.lng : undefined;
+
+      out.push({
+        id: o.id,
+        apiary_id: apiaryForItem,
+        label: o.label,
+        lat,
+        lng,
+      });
+    }
+    return out;
   } catch {
     return [];
   }
 }
-// Fallback si no hay nada en localStorage (usa alerts mock)
 function defaultFromAlerts(apiaryId: string) {
   const uniq = new Map<string, Hive>();
   for (const a of getMockAlerts()) {
@@ -77,7 +108,6 @@ function Sparkline({ data, h = 42, w = 140 }: { data: number[]; h?: number; w?: 
     </svg>
   );
 }
-
 function RadialGauge({
   value,
   min = 0,
@@ -125,7 +155,6 @@ function RadialGauge({
     </div>
   );
 }
-
 function DonutGauge({
   value,
   max = 30,
@@ -177,7 +206,6 @@ function DonutGauge({
     </svg>
   );
 }
-
 function BulletBar({
   value,
   min,
@@ -226,7 +254,6 @@ function BulletBar({
     </div>
   );
 }
-
 function MiniBars({ data }: { data: number[] }) {
   const max = Math.max(...data, 1);
   return (
@@ -241,7 +268,6 @@ function MiniBars({ data }: { data: number[] }) {
     </div>
   );
 }
-
 function ThermoBar({ value, min = 0, max = 50 }: { value: number; min?: number; max?: number }) {
   const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
   return (
@@ -253,7 +279,6 @@ function ThermoBar({ value, min = 0, max = 50 }: { value: number; min?: number; 
     </div>
   );
 }
-
 function DualProgress({
   a,
   b,
@@ -325,14 +350,14 @@ function buildKPIs(hives: Hive[], t: (k: string) => string): KPI[] {
   const icon = (name: string) =>
     (
       ({
-        status: '/images/activity.png',
+        status: '/images/status.png',
         health: '/images/health.png',
         queen: '/images/queen.png',
         brood: '/images/brood.png',
         honey: '/images/honey.png',
         pollen: '/images/pollen.png',
         population: '/images/bees.png',
-        disease: '/images/warn.png',
+        disease: '/images/bug.png',
       }) as Record<string, string>
     )[name];
 
@@ -367,7 +392,6 @@ function buildKPIs(hives: Hive[], t: (k: string) => string): KPI[] {
     icon: icon(key),
   }));
 }
-
 function ts(days = 14, min = 0, max = 100): Point[] {
   const out: Point[] = [];
   const now = Date.now();
@@ -386,8 +410,25 @@ function buildApiaryHistory(hivesCount: number) {
     humidity: ts(14, 40, 78),
     weight: ts(14, 18 + bump * 0.5, 27 + bump * 0.6),
     flight: ts(14, 120, 320 + 10 * bump),
-    mortality: ts(14, 80, 320), // para barras
+    mortality: ts(14, 80, 320),
   };
+}
+
+/* ---------- icon fallback to avoid 404 spam ---------- */
+function KpiIcon({ src, emoji }: { src: string; emoji: string }) {
+  const [failed, setFailed] = useState(false);
+  return failed ? (
+    <span className="text-xl">{emoji}</span>
+  ) : (
+    <Image
+      src={src}
+      alt=""
+      width={18}
+      height={18}
+      className="brightness-0"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 /* ---------------- small UI pieces ---------------- */
@@ -398,12 +439,22 @@ function KpiCard({ k }: { k: KPI }) {
       : k.sev === 'warn'
         ? 'bg-amber-400 text-black'
         : 'bg-rose-500 text-white';
+  const emojiMap: Record<string, string> = {
+    status: '📊',
+    health: '🩺',
+    queen: '👑',
+    brood: '🐣',
+    honey: '🍯',
+    pollen: '🌿',
+    population: '🐝',
+    disease: '🧫',
+  };
   return (
     <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/90">
-            <Image src={k.icon} alt="" width={18} height={18} className="brightness-0" />
+            <KpiIcon src={k.icon} emoji={emojiMap[k.key] ?? '📈'} />
           </div>
           <p className="font-semibold">{k.label}</p>
         </div>
@@ -448,11 +499,7 @@ function Tabs({ active, onTab }: { active: TabKey; onTab: (k: TabKey) => void })
           <button
             key={it.k}
             onClick={() => onTab(it.k)}
-            className={`rounded-full px-3 py-2 text-sm ring-1 ring-black/5 whitespace-nowrap ${
-              active === it.k
-                ? 'bg-amber-400 text-black font-semibold'
-                : 'bg-neutral-900 text-neutral-200'
-            }`}
+            className={`rounded-full px-3 py-2 text-sm ring-1 ring-black/5 whitespace-nowrap ${active === it.k ? 'bg-amber-400 text-black font-semibold' : 'bg-neutral-900 text-neutral-200'}`}
           >
             {it.label}
           </button>
@@ -468,7 +515,7 @@ function Tabs({ active, onTab }: { active: TabKey; onTab: (k: TabKey) => void })
 }
 
 /* ---------------- Page ---------------- */
-export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
+export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
   const { t } = useI18n();
   const router = useRouter();
 
@@ -488,7 +535,7 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
   const [tab, setTab] = useState<TabKey>('status');
 
   const kpis = useMemo(() => buildKPIs(hives, t), [hives, t]);
-  const hist = useMemo(() => buildApiaryHistory(hives.length), [hives.length]);
+  const hist = useMemo(() => buildApiaryHistory(hives.length), [hives]);
 
   const mediaItems = useMemo(() => {
     try {
@@ -506,21 +553,20 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
     '/images/apiary3.png';
   const imgBefore = '/images/apiary1.png';
 
-  /* ----- Advanced mock metrics (para las gráficas nuevas) ----- */
   const adv = useMemo(() => {
     const rnd = (a: number, b: number) => a + Math.random() * (b - a);
     return {
       varroaPct: rnd(2.3, 6.8),
-      estYield: rnd(10, 22), // kg/colony
-      weightNow: rnd(18, 28), // kg
+      estYield: rnd(10, 22),
+      weightNow: rnd(18, 28),
       weightTarget: 26,
       mortality7: Array.from({ length: 10 }, () => Math.round(rnd(80, 320))),
       tempNow: rnd(31, 38),
-      co2ppm: rnd(800, 1800), // mostramos % aprox /10
+      co2ppm: rnd(800, 1800),
       o2pct: rnd(17, 21),
       pesticidePpb: rnd(0, 3.2),
     };
-  }, [hives.length]);
+  }, [hives]);
 
   return (
     <CardShell
@@ -534,34 +580,43 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
       contentClassName="pb-24 pt-2"
       footer={<NavTab active="home" />}
     >
-      <h1 className="text-[22px] font-bold">{tv(t, 'hive.details.title', 'Hive Details')}</h1>
+      <h1 className="text-[22px] font-bold">{tv(t, 'apiary.details.title', 'Apiary Details')}</h1>
       <p className="mt-1 text-sm text-neutral-400">
         {name} · {hives.length} {hives.length === 1 ? 'hive' : 'hives'}
       </p>
 
+      {/* Acciones del apiario */}
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button
+          onClick={() => router.push('/hives/new')}
+          className="h-11 rounded-2xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
+        >
+          + Add Hive
+        </button>
+        <button
+          onClick={() => router.push('/capture')}
+          className="h-11 rounded-2xl bg-amber-400 font-semibold text-black hover:bg-amber-300"
+        >
+          Capture / Analyze
+        </button>
+      </div>
+
       <Tabs active={tab} onTab={setTab} />
 
-      {/* STATUS */}
       {tab === 'status' && (
         <div className="mt-4 grid grid-cols-1 gap-3">
           {kpis.map((k) => (
             <KpiCard key={k.key} k={k} />
           ))}
 
-          {/* Advanced KPIs (cards con gráficas variadas) */}
+          {/* Advanced KPIs */}
           <div className="mt-2 rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
             <p className="text-sm font-semibold mb-3">Advanced KPIs</p>
-
             <div className="grid grid-cols-2 gap-3">
-              {/* Varroa radial */}
               <div className="rounded-xl bg-neutral-800 p-3">
                 <p className="text-xs text-neutral-400 mb-1">Varroa Infestation</p>
-                <div className="flex items-center gap-3">
-                  <RadialGauge value={adv.varroaPct} label="Action &lt; 3–5%" />
-                </div>
+                <RadialGauge value={adv.varroaPct} label="Action < 3–5%" />
               </div>
-
-              {/* Yield donut */}
               <div className="rounded-xl bg-neutral-800 p-3">
                 <p className="text-xs text-neutral-400 mb-1">Est. Honey Yield</p>
                 <div className="flex items-center gap-3">
@@ -569,8 +624,6 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
                   <span className="text-xs text-neutral-400">Target 30kg</span>
                 </div>
               </div>
-
-              {/* Peso bullet */}
               <div className="rounded-xl bg-neutral-800 p-3">
                 <p className="text-xs text-neutral-400 mb-2">Hive Weight</p>
                 <BulletBar
@@ -586,20 +639,14 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
                   ]}
                 />
               </div>
-
-              {/* Mortalidad barras */}
               <div className="rounded-xl bg-neutral-800 p-3">
                 <p className="text-xs text-neutral-400 mb-2">Daily Mortality</p>
-                <MiniBars data={adv.mortality7.map((x) => x)} />
+                <MiniBars data={adv.mortality7} />
               </div>
-
-              {/* Temperatura */}
               <div className="rounded-xl bg-neutral-800 p-3">
                 <p className="text-xs text-neutral-400 mb-2">Nest Temperature</p>
                 <ThermoBar value={adv.tempNow} min={25} max={45} />
               </div>
-
-              {/* CO2 / O2 */}
               <div className="rounded-xl bg-neutral-800 p-3">
                 <p className="text-xs text-neutral-400 mb-2">CO₂ / O₂ Levels</p>
                 <DualProgress
@@ -611,8 +658,6 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
                   unitB="%"
                 />
               </div>
-
-              {/* Pesticidas semáforo */}
               <div className="col-span-2 rounded-xl bg-neutral-800 p-3">
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-neutral-400">Agrochemical Exposure</p>
@@ -634,7 +679,6 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
         </div>
       )}
 
-      {/* HISTORY */}
       {tab === 'history' && (
         <div className="mt-4 grid grid-cols-1 gap-3">
           <HistoryRow title="Varroa (%)" unit="%" data={hist.varroa} />
@@ -645,7 +689,6 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
         </div>
       )}
 
-      {/* RECS */}
       {tab === 'recs' && (
         <div className="mt-4 space-y-3">
           <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
@@ -667,7 +710,6 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
         </div>
       )}
 
-      {/* MEDIA */}
       {tab === 'media' && (
         <div className="mt-4 grid grid-cols-2 gap-3">
           {mediaItems.map((src, i) => (
@@ -681,10 +723,9 @@ export default function HiveDetailClient({ apiaryId }: { apiaryId: string }) {
         </div>
       )}
 
-      {/* EVIDENCE */}
       {tab === 'evidence' && (
         <div className="mt-4 space-y-3">
-          <BeforeAfter beforeSrc={'/images/apiary1.png'} afterSrc={String(imgAfter)} />
+          <BeforeAfter beforeSrc={imgBefore} afterSrc={String(imgAfter)} />
           <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5 text-sm text-neutral-300">
             Slide to compare “Before” vs “After”.
           </div>

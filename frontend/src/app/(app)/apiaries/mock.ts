@@ -1,6 +1,6 @@
 // Mocks para /hives.
 // Construimos el apiario "Azul's Bees" con las 4 colmenas que ya aparecen en alerts/map.
-
+//frontend/src/app/(app)/apiaries/mock.ts
 import { getMockAlerts } from '@/app/(app)/alerts/mock';
 
 export type ApiaryStatus = 'healthy' | 'attention' | 'critical';

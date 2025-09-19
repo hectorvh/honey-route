@@ -16,7 +16,7 @@ const LABELS = {
 } as const;
 
 const TABS: Tab[] = [
-  { key: 'home', href: '/hives', icon: '/images/home.png', tKey: 'home' },
+  { key: 'home', href: '/apiaries', icon: '/images/home.png', tKey: 'home' },
   { key: 'alerts', href: '/alerts', icon: '/images/warning.png', tKey: 'alerts' },
   { key: 'map', href: '/map', icon: '/images/map.png', tKey: 'map' },
   { key: 'settings', href: '/settings', icon: '/images/settings.png', tKey: 'settings' },

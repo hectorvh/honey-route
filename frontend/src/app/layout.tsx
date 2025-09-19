@@ -6,7 +6,6 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'HoneyRoute',
-  themeColor: '#0A0A0A',
   icons: [
     { rel: 'icon', url: '/icons/favicon.png', sizes: '32x32' },
     { rel: 'apple-touch-icon', url: '/icon.png' },

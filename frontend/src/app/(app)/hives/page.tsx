@@ -1,8 +1,5 @@
-import HivesClient from './HivesClient';
-import { getMockApiaries } from './mock';
-
-// Server Component simple: sin Supabase, sólo mocks.
-export default function HivesPage() {
-  const cards = getMockApiaries();
-  return <HivesClient cards={cards} />;
+// frontend/src/app/(app)/hives/page.tsx
+import { redirect } from 'next/navigation';
+export default function LegacyHivesIndex() {
+  redirect('/apiaries');
 }
