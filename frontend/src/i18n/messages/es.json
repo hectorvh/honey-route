@@ -249,6 +249,9 @@
       "detections": "Detecciones",
       "sev": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
       "none": "No se detectaron problemas.",
+      "imagesReviewed": "{{count}} imágenes revisadas",
+      "timeTaken": "Procesado en {{sec}} s",
+      "riskShort": "RIESGO",
       "seeRecs": "Ver recomendaciones",
       "logAction": "Registrar acción"
     },
