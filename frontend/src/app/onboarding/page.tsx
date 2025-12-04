@@ -26,7 +26,7 @@ export default function Onboarding() {
       heroSlot={
         <>
           <Image
-            src="/images/onboarding.jpg"
+            src="/images/onboarding2.jpg"
             alt=""
             fill
             priority
