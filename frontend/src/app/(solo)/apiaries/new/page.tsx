@@ -1,4 +1,3 @@
-//frontend/src/app/(solo)/apiaries/new/page.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -28,9 +27,9 @@ export default function NewApiaryPage() {
         <h1 className="text-3xl font-extrabold leading-tight text-center">
           {t('apiary.newTitle')}
         </h1>
+
         <div className="mt-6">
-          {/* ✅ ahora el form acepta onDone */}
-          <NewApiaryForm onDone={() => router.replace('/hives')} />
+          <NewApiaryForm onDone={() => router.replace('/apiaries')} />
         </div>
 
         <p className="mt-8 text-center text-xs text-neutral-500">

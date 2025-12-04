@@ -1,16 +1,59 @@
-# honey-route
+# 🐝 HoneyRoute — Apiary Intelligence Platform (Powered by EcoVentus)
 
-HoneyRoute serves smallholder beekeepers and cooperative administrators. It provides photo-based pest/disease detection (e.g., Varroa risk), alerting, recommendations, action logging, and basic mapping. Future phases include floral resource maps and predictive risk zones. The system will be branded as “HoneyRoute — Powered by EcoVentus.”
+> 2nd Place — Huawei Developer Competition LATAM (Brasil) 2025  
+> Mobile-first PWA that empowers beekeepers with AI-driven hive health detection, alerts, and actionable recommendations.
 
-Monorepo with frontend (Next.js) and backend (NestJS) for the HoneyRoute MVP. Uses PNPM workspaces, Turborepo, Husky, and Commitlint for organized collaboration.
-Monorepo with frontend (Next.js) and backend (NestJS) for the HoneyRoute MVP. Uses PNPM workspaces, Turborepo, Husky, and Commitlint for organized collaboration.
+---
 
-TL;DR (5 steps)
-TL;DR (5 steps)
+## 🚀 Overview
+HoneyRoute helps smallholder beekeepers and cooperative administrators detect hive issues (e.g., Varroa risk), receive AI-based recommendations, and log actions even offline.  
+It’s designed for **low-connectivity rural areas**, providing **multilingual (EN/ES-MX)** support and **offline-first synchronization**.
 
-# 0) Requirements: Node 20, pnpm 9, Git. (Docker optional)
+---
 
-corepack disable && npm i -g pnpm@9.7.0
+## 🧩 Key Features
+- 📸 **Photo-based AI analysis** — capture and detect health risks (e.g., pests, diseases).  
+- ⚠️ **Alert system** — severity-filtered inbox and resolution tracking.  
+- 🧭 **Hive management** — create, view, and track hives with history and KPIs.  
+- 🌍 **Map view** — visualize apiaries and risk zones.  
+- 🌐 **Bilingual + offline mode** — full i18n (EN/ES-MX) and background sync.  
+- 🔐 **Privacy-first** — local data storage, consent-based camera & GPS.
+
+---
+
+## 🛠️ Tech Stack
+| Layer | Technology |
+|-------|-------------|
+| Frontend | **React + TypeScript + Tailwind + Next.js SSR** |
+| Backend | **Node.js  + REST/GraphQL API** |
+| Architecture | **pnpm monorepo + TurboRepo + Husky + Commitlint + CI/CD** |
+| AI Integration | **Custom API for hive image risk analysis** |
+| Offline | **Service Workers + IndexedDB queue system** |
+| i18n | **EN base + ES-MX localization** |
+
+---
+
+## 🧭 System Flow
+1. **Capture/Upload** hive image  
+2. **AI evaluates** risk level (low/medium/high)  
+3. **Recommendations** generated dynamically  
+4. **User logs actions** → synced once online  
+
+---
+
+## 🧠 UX & Design
+- Designed 22 responsive interfaces in Figma (mobile-first).
+- UI based on 8pt grid, AA contrast, and inclusive copywriting.  
+- Components: Buttons, Cards, Tabs, Toasts, Modals, Badges.  
+- Accessibility: WCAG 2.2 AA (focus rings, 44×44 touch targets).
+
+---
+
+## 🧩 Folder Structure
+  frontend/   → React + Tailwind + i18n + offline logic
+  backend/    → API handlers
+  docs/       → SRS + Design Spec + Brand Sheet
+  scripts/    → CI/CD + automation
 
 # 1) Install
 
@@ -45,7 +88,6 @@ pnpm dev
    • CI: GitHub Actions separated per package (frontend/** and backend/**).
 
 Note: We pinned Tailwind v3 for stability. (If someone installs v4 you’ll get an error with the PostCSS plugin; see “Troubleshooting.”)
-Note: We pinned Tailwind v3 for stability. (If someone installs v4 you’ll get an error with the PostCSS plugin; see “Troubleshooting.”)
 
 2. Requirements
    • Node.js 20 (ideally with nvm)
@@ -60,47 +102,7 @@ Note: We pinned Tailwind v3 for stability. (If someone installs v4 you’ll get 
    • Docker Desktop (only if you’ll use local Postgres/Redis):
    brew install --cask docker
 
-3)  Repository structure
-    honey-route/
-    ├─ frontend/ # Next.js (App Router)
-    ├─ backend/ # NestJS
-    ├─ docs/ # Architecture, API contract, ADRs
-    ├─ frontend/ # Next.js (App Router)
-    ├─ backend/ # NestJS
-    ├─ docs/ # Architecture, API contract, ADRs
-    ├─ .github/
-    │ ├─ workflows/ # ci-frontend.yml, ci-backend.yml
-    │ └─ ISSUE_TEMPLATE/ # bug/feature templates
-    ├─ scripts/bootstrap.sh # generates front and back scaffolds
-    ├─ docker-compose.yml # Postgres + Redis (optional)
-    │ ├─ workflows/ # ci-frontend.yml, ci-backend.yml
-    │ └─ ISSUE_TEMPLATE/ # bug/feature templates
-    ├─ scripts/bootstrap.sh # generates front and back scaffolds
-    ├─ docker-compose.yml # Postgres + Redis (optional)
-    ├─ pnpm-workspace.yaml
-    ├─ turbo.json # Turborepo tasks
-    ├─ .husky/ # pre-commit, commit-msg
-    ├─ turbo.json # Turborepo tasks
-    ├─ .husky/ # pre-commit, commit-msg
-    ├─ .prettierrc, .editorconfig, .gitignore, commitlint.config.cjs
-    └─ README.md
-4)  Installation & startup
-    1. Install dependencies
-       pnpm install
-    2. Generate projects (if not yet created)
-    3. Generate projects (if not yet created)
-       pnpm bootstrap
-    4. Environment variables
-    5. Environment variables
-       cp frontend/.env.example frontend/.env.local
-       cp backend/.env.example backend/.env
-    6. (Optional) Start local services
-    7. (Optional) Start local services
-       docker compose up -d
-    8. Development
-    9. Development
-
-    # Front + Back with Turbo
+# Front + Back with Turbo
 
          pnpm dev
          # Or per package:
@@ -149,7 +151,6 @@ Backend
    S3_ACCESS_KEY_ID=
    S3_SECRET_ACCESS_KEY=
    For CI/Prod, configure Secrets in GitHub (Settings → Secrets and variables → Actions).
-   For CI/Prod, configure Secrets in GitHub (Settings → Secrets and variables → Actions).
 
 7. Branch flow & collaboration
    • main: protected, stable (only approved PRs).
@@ -180,59 +181,6 @@ Checklist before to open PR:
 
 ⸻
 
-8.  Code style & VS Code
-    • Prettier + ESLint (Husky runs lint-staged on pre-commit).
-    • Recommended to install extensions:
-    • Tailwind CSS IntelliSense
-    • ESLint
-    • Prettier
-    • .vscode/settings.json (optional) can ignore @tailwind/@apply warnings:
-    • .vscode/settings.json (optional) can ignore @tailwind/@apply warnings:
-    { "css.lint.unknownAtRules": "ignore", "files.associations": {"\*.css":"tailwindcss"} }
-
-9.  Feature development (example)
-
-Frontend
-• Base pages:: /hives, /capture, /analysis/[jobId], /alerts, /settings, /history/[hiveId], /map.
-• Mobile shell: layout (app) con NavTab fija.
-• Minimal UI: Button, Card, EmptyState.
-• Base pages:: /hives, /capture, /analysis/[jobId], /alerts, /settings, /history/[hiveId], /map.
-• Mobile shell: layout (app) con NavTab fija.
-• Minimal UI: Button, Card, EmptyState.
-
-Backend
-• Mock ready for /analysis.
-• AAdd more modules with:
-• Mock ready for /analysis.
-• AAdd more modules with:
-
-⸻
-
-## Authentication with Supabase
-
-This app uses [Supabase Auth](https://supabase.com/) for email/password and OAuth login.
-We kept a **mobile-first** and the **unified shell heigh\*.
-This app uses [Supabase Auth](https://supabase.com/) for email/password and OAuth login.
-We kept a **mobile-first** and the **unified shell heigh\*.
-
-### 1) Environment variable (Frontend)
-
-1. Create `frontend/.env.local` with your project values:
-1. Create `frontend/.env.local` with your project values:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=TU_ANON_KEY
-```
-
-Make sure .env\* files are ignored in .gitignore (already configured).
-
-2. Dependencies
-   Make sure .env\* files are ignored in .gitignore (already configured).
-
-3. Dependencies
-   pnpm --filter frontend add @supabase/supabase-js @supabase/ssr
-
 PWA (installable app)
 • next-pwa configurado en frontend/next.config.mjs.
 • SW se registra solo en producción (NODE_ENV=production).
@@ -256,11 +204,22 @@ Probar en el teléfono (misma red)
 3.  Abre la URL https://<algo>.trycloudflare.com en el móvil.
 4.  “Add to Home Screen” / “Instalar app”.
 
-12) License & conduct
-    • MIT(see LICENSE)
-    • Code of Conduct in CODE_OF_CONDUCT.md
-    • Contribution guidelines in CONTRIBUTING.md
+---
 
-13. Contact
-    • Initial maintainer: @azulrk
-    • Issues and PRs in this repo.
+## 👩‍💻 Contributors
+| Role | Name |
+|------|------|
+| Product & Front-End Lead | **Azul Grisel Ramírez Kuri** |
+| Backend & Data | **Héctor Valdés** |
+
+---
+
+---
+
+## 📸 Screenshots / Demo
+*(Add here Figma prototype, screenshots, or deployment link)*
+
+---
+
+## 📄 License
+© 2025 HoneyRoute — Powered by EcoVentus. All rights reserved.

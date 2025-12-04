@@ -1,4 +1,3 @@
-// frontend/src/app/(app)/map/MapClient.tsx
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -21,7 +20,15 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 type Center = { lat: number; lng: number };
 
 // i18n helper (fallback)
-const tv = (t: (k: string) => string, k: string, fb: string) => (t(k) === k ? fb : t(k));
+const tv = (
+  t: (k: string, p?: Record<string, unknown>) => string,
+  k: string,
+  fb: string,
+  p?: Record<string, unknown>
+) => {
+  const out = t(k, p);
+  return out === k ? fb : out;
+};
 
 // Exponer la instancia del mapa (sin SSR)
 function BindMap({ onMap }: { onMap: (map: LeafletMap) => void }) {
@@ -242,6 +249,12 @@ export default function MapClient() {
                   <p className="mt-1 text-xs text-neutral-600">
                     {h.lat.toFixed(4)}, {h.lng.toFixed(4)}
                   </p>
+                  <button
+                    className="mt-2 rounded-md bg-amber-400 px-2 py-1 text-xs font-semibold text-black hover:bg-amber-300"
+                    onClick={() => mapRef.current?.flyTo([h.lat, h.lng], 15)}
+                  >
+                    {tv(t, 'map.zoomHere', 'Zoom here')}
+                  </button>
                 </div>
               </Popup>
             </Marker>
@@ -249,11 +262,11 @@ export default function MapClient() {
         </MapContainer>
 
         {/* Zoom */}
-        <div className="absolute right-3 bottom-20 grid overflow-hidden rounded-xl bg-white/90 text-black shadow">
+        <div className="absolute right-3 bottom-20 z-[1000] grid overflow-hidden rounded-xl bg-white/90 text-black shadow">
           <button
             onClick={zoomIn}
             className="px-3 py-2 font-semibold hover:bg-black/5"
-            aria-label="Zoom in"
+            aria-label={tv(t, 'map.a11y.zoomIn', 'Zoom in')}
           >
             +
           </button>
@@ -261,7 +274,7 @@ export default function MapClient() {
           <button
             onClick={zoomOut}
             className="px-3 py-2 font-semibold hover:bg-black/5"
-            aria-label="Zoom out"
+            aria-label={tv(t, 'map.a11y.zoomOut', 'Zoom out')}
           >
             −
           </button>
@@ -270,14 +283,14 @@ export default function MapClient() {
         {/* Locate */}
         <button
           onClick={locateMe}
-          className="absolute right-3 bottom-3 rounded-full bg-amber-400 px-4 py-3 font-semibold text-black shadow-lg hover:bg-amber-300"
+          className="absolute right-3 bottom-3 z-[1000] rounded-full bg-amber-400 px-4 py-3 font-semibold text-black shadow-lg hover:bg-amber-300"
         >
           {tv(t, 'map.locate', 'Locate me')}
         </button>
 
         {/* Etiqueta del hive enfocado */}
         {label && (
-          <div className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-xs text-white">
+          <div className="absolute left-3 top-3 z-[1000] rounded-full bg-black/70 px-3 py-1 text-xs text-white">
             {label}
           </div>
         )}
@@ -328,7 +341,10 @@ export default function MapClient() {
                   </p>
                 </div>
                 <span className="ml-3 rounded-full bg-neutral-900 px-2 py-1 text-xs">
-                  {tv(t, 'home.hivesCount', '{{count}} hives').replace('{{count}}', '1')}
+                  {tv(t, 'home.hivesCount', '{{count}} hives', { count: 1 }).replace(
+                    '{{count}}',
+                    '1'
+                  )}
                 </span>
               </button>
             ))}

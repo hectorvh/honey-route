@@ -12,17 +12,14 @@ import { useI18n } from '@/i18n/I18nProvider';
 
 import { getMockAlerts, type AlertItem, type AlertType, type Severity } from './mock';
 
-/* --- icons (se mostrarán en negro con filter brightness-0) --- */
 const ICONS: Record<AlertType, string> = {
   temp: '/images/temp.png',
   humidity: '/images/drop.png',
   queen: '/images/queen.png',
 };
 
-/* --- i18n fallback helper --- */
 const tv = (t: (k: string) => string, k: string, fb: string) => (t(k) === k ? fb : t(k));
 
-/* --- time ago with i18n --- */
 function ago(iso: string, t: (k: string) => string) {
   const d = new Date(iso).getTime();
   const diff = Math.max(0, Date.now() - d);
@@ -35,7 +32,6 @@ function ago(iso: string, t: (k: string) => string) {
   return tv(t, 'alerts.time.d', '{{count}}d').replace('{{count}}', String(dys));
 }
 
-/* --- severity pill (i18n) --- */
 function Pill({ sev }: { sev: Severity }) {
   const { t } = useI18n();
   const styles =
@@ -57,9 +53,9 @@ function Pill({ sev }: { sev: Severity }) {
   );
 }
 
-/* --- list row --- */
 function Row({ a, onClick }: { a: AlertItem; onClick: () => void }) {
   const { t } = useI18n();
+  const title = a.listKey ? tv(t, a.listKey, a.listText ?? a.title) : (a.listText ?? a.title);
   return (
     <button
       type="button"
@@ -67,7 +63,6 @@ function Row({ a, onClick }: { a: AlertItem; onClick: () => void }) {
       className="w-full rounded-2xl bg-neutral-900 p-3 text-left ring-1 ring-black/5 transition hover:bg-neutral-800"
     >
       <div className="flex items-center gap-3">
-        {/* icono unificado en negro con fondo blanco para contraste */}
         <div className="grid h-10 w-10 place-items-center rounded-full bg-white">
           <Image
             src={ICONS[a.type]}
@@ -80,7 +75,7 @@ function Row({ a, onClick }: { a: AlertItem; onClick: () => void }) {
 
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">
-            {a.hive.name}: {a.listText ?? a.title}
+            {a.hive.name}: {title}
           </p>
           <div className="mt-1 flex items-center gap-2 text-sm text-neutral-400">
             <span className="inline-block">
@@ -122,7 +117,6 @@ export default function AlertsClient() {
     return out;
   }, [items, sev, typ, sort]);
 
-  /* --- chip --- */
   const Chip = ({
     active,
     children,
@@ -161,9 +155,8 @@ export default function AlertsClient() {
         {tv(t, 'alerts.title', 'Alerts')}
       </h1>
 
-      {/* Filtros */}
+      {/* Filters */}
       <div className="mt-4 space-y-3">
-        {/* severity */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-neutral-400">
             {tv(t, 'alerts.filter.sev', 'Severity')}:
@@ -182,28 +175,22 @@ export default function AlertsClient() {
           </Chip>
         </div>
 
-        {/* type */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-neutral-400">{tv(t, 'alerts.filter.type', 'Type')}:</span>
           <Chip active={typ === 'all'} onClick={() => setTyp('all')}>
             {tv(t, 'alerts.filter.all', 'All')}
           </Chip>
-          <Chip active={typ === 'temp'} onClick={() => setTyp('temp')} iconSrc={ICONS.temp}>
+          <Chip active={typ === 'temp'} onClick={() => setTyp('temp')}>
             {tv(t, 'alerts.type.temp', 'Temperature')}
           </Chip>
-          <Chip
-            active={typ === 'humidity'}
-            onClick={() => setTyp('humidity')}
-            iconSrc={ICONS.humidity}
-          >
+          <Chip active={typ === 'humidity'} onClick={() => setTyp('humidity')}>
             {tv(t, 'alerts.type.humidity', 'Humidity')}
           </Chip>
-          <Chip active={typ === 'queen'} onClick={() => setTyp('queen')} iconSrc={ICONS.queen}>
+          <Chip active={typ === 'queen'} onClick={() => setTyp('queen')}>
             {tv(t, 'alerts.type.queen', 'Queen')}
           </Chip>
         </div>
 
-        {/* sort */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-neutral-400">{tv(t, 'alerts.sort', 'Sort by')}:</span>
           <Chip active={sort === 'recent'} onClick={() => setSort('recent')}>
@@ -215,7 +202,7 @@ export default function AlertsClient() {
         </div>
       </div>
 
-      {/* Lista */}
+      {/* List */}
       <div className="mt-5 space-y-3">
         {filtered.map((a) => (
           <Row key={a.id} a={a} onClick={() => router.push(`/alerts/${a.id}`)} />

@@ -30,6 +30,29 @@
     "hiveTypeLabel": "Tipo de colmena",
     "hiveTypePh": "Selecciona el tipo",
     "createCta": "Crear apiario",
+    "lat": "Lat",
+    "lng": "Lng",
+    "useMyLocation": "Usar mi ubicación",
+    "elevationLabel": "Elevación (m)",
+    "elevationPh": "Ej. 1200",
+    "mgmtLabel": "Manejo",
+    "notesLabel": "Notas (opcional)",
+    "notesPh": "Flora local, acceso, riego, etc.",
+    "details": { "title": "Detalle del apiario" },
+    "tabs": {
+      "status": "Estado",
+      "history": "Historial",
+      "recs": "Recomendaciones",
+      "media": "Medios",
+      "evidence": "Evidencia"
+    },
+    "history": {
+      "varroa": "Varroa (%)",
+      "weight": "Peso de colmena (kg)",
+      "temp": "Temp. del nido (°C)",
+      "humidity": "Humedad (%)",
+      "flight": "Actividad de vuelo"
+    },
     "types": {
       "langstroth": "Langstroth",
       "topbar": "Top-bar",
@@ -37,7 +60,78 @@
     },
     "errors": {
       "nameReq": "Ingresa un nombre.",
+      "noGeo": "Geolocalización no disponible",
+      "geoDenied": "Permiso denegado",
       "nameRequired": "Ingresa un nombre."
+    },
+    "fields": {
+      "lat": "Lat",
+      "lng": "Lng",
+      "elevationLabel": "Elevación (m)",
+      "elevationPh": "Ej. 1200",
+      "mgmtLabel": "Manejo",
+      "notesLabel": "Notas (opcional)",
+      "notesPh": "Flora, accesos, riego, etc."
+    },
+    "actions": {
+      "useMyLocation": "Usar mi ubicación"
+    },
+    "mgmt": {
+      "integrated": "Integrado",
+      "conventional": "Convencional",
+      "organic": "Orgánico"
+    }
+  },
+  "hive": {
+    "newTitle": "Nueva colmena",
+    "newSubtitle": "Se guardará en tu apiario activo.",
+    "fields": {
+      "kind": "Tipo",
+      "label": "Etiqueta / nombre",
+      "lat": "Lat",
+      "lng": "Lng",
+      "notes": "Notas (opcional)"
+    },
+    "actions": {
+      "useMyLocation": "Usar mi ubicación"
+    },
+    "placeholders": {
+      "label": "Ej. Hive A-01",
+      "notes": "Observaciones, reina, tratamiento, etc."
+    },
+    "errors": {
+      "noApiary": "No hay apiario activo.",
+      "labelReq": "Pon una etiqueta/nombre.",
+      "coordsReq": "Lat/Lng requeridos (puedes usar “Mi ubicación”).",
+      "saveFail": "No pudimos guardar tu colmena."
+    },
+    "saveCta": "Guardar colmena",
+    "kpi": {
+      "status": "Estado",
+      "health": "Salud",
+      "queen": "Presencia de reina",
+      "brood": "Patrón de cría",
+      "honey": "Reservas de miel",
+      "pollen": "Reservas de polen",
+      "population": "Población",
+      "disease": "Enfermedad/Plagas",
+      "active": "Activo",
+      "lastInspection100": "100% última inspección",
+      "noneDetected": "No se detectó nada"
+    },
+    "advanced": {
+      "title": "Indicadores avanzados",
+      "varroa": "Infestación de Varroa",
+      "varroaHint": "Acción < 3–5%",
+      "yield": "Rend. estimado de miel",
+      "yieldTarget": "Meta 30kg",
+      "weight": "Peso de la colmena",
+      "mortality": "Mortalidad diaria",
+      "temp": "Temperatura del nido",
+      "gases": "Niveles de CO₂ / O₂",
+      "agrochem": "Exposición a agroquímicos",
+      "openRecs": "Abrir recomendaciones",
+      "evidenceHint": "Desliza para comparar “Antes” vs “Después”."
     }
   },
   "common": {
@@ -77,6 +171,9 @@
   "home": {
     "title": "Mis apiarios",
     "capture": "Capturar / Analizar",
+    "addHive": "Agregar colmena",
+    "newApiary": "Nuevo apiario",
+    "empty": "Aún no tienes apiarios. ¡Crea el primero!",
     "hivesCount": "{{count}} colmenas",
     "status": {
       "healthy": "Saludable",
@@ -93,10 +190,20 @@
   "map": {
     "title": "Mapa",
     "searchPh": "Buscar colmenas o lugares",
+    "search": "Buscar",
+    "hives": "Colmenas",
     "comingSoon": "Mapas florales y zonas de riesgo en próximas versiones",
     "locate": "Mi ubicación",
     "noGeo": "Geolocalización no disponible",
-    "geoDenied": "Permiso denegado"
+    "geoDenied": "Permiso denegado",
+    "empty": "No hay colmenas para mostrar",
+    "zoomHere": "Ir aquí",
+    "youAreHere": "Estás aquí",
+    "highlight": "Destacado",
+    "a11y": {
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar"
+    }
   },
   "camera": {
     "title": "Cámara",
@@ -142,6 +249,9 @@
       "detections": "Detecciones",
       "sev": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
       "none": "No se detectaron problemas.",
+      "imagesReviewed": "{{count}} imágenes revisadas",
+      "timeTaken": "Procesado en {{sec}} s",
+      "riskShort": "RIESGO",
       "seeRecs": "Ver recomendaciones",
       "logAction": "Registrar acción"
     },
@@ -251,6 +361,11 @@
     "denied": "No se concedió el permiso."
   },
   "alerts": {
+    "title": "Alertas",
+    "filter": { "sev": "Severidad", "type": "Tipo", "all": "Todos" },
+    "type": { "temp": "Temperatura", "humidity": "Humedad", "queen": "Reina" },
+    "sort": { "label": "Ordenar por", "recent": "Más recientes", "severity": "Severidad" },
+    "empty": "No hay alertas que coincidan",
     "sev": { "high": "Alta", "medium": "Media", "low": "Baja" },
     "time": {
       "now": "ahora",
@@ -266,6 +381,12 @@
       "goHive": "Ir a la colmena",
       "resolve": "Marcar como resuelta",
       "resolvedToast": "Marcada como resuelta"
+    },
+    "items": {
+      "a1": { "title": "Alta temperatura detectada", "list": "Alta temperatura" },
+      "a2": { "title": "Humedad fuera del rango óptimo", "list": "Alerta de humedad" },
+      "a3": { "title": "La condición de la reina requiere atención", "list": "Estado de la reina" },
+      "a4": { "title": "Baja temperatura detectada", "list": "Baja temperatura" }
     }
   }
 }

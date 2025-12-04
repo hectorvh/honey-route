@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -21,16 +22,27 @@ const ICONS: Record<AlertType, string> = {
 };
 const HONEY_ICON = '/images/honey.png';
 
-/* --- tiny i18n helper (fallback legible si falta key) --- */
-const tv = (
-  t: (k: string, p?: Record<string, unknown>) => string,
-  k: string,
-  fb: string,
-  p?: Record<string, unknown>
-) => (t(k, p) === k ? fb : t(k, p));
+/* --- i18n helper tipado con interpolación simple --- */
+type TFunc = (k: string, p?: Record<string, unknown>) => string;
 
-/* --- time “ago” with i18n --- */
-function ago(iso: string, t: (k: string, p?: Record<string, unknown>) => string) {
+const fmt = (s: string, p?: Record<string, unknown>) => {
+  if (!p) return s;
+  let out = s;
+  for (const [k, v] of Object.entries(p)) {
+    const re = new RegExp(`{{\\s*${k}\\s*}}`, 'g');
+    out = out.replace(re, String(v));
+  }
+  return out;
+};
+
+const tv = (t: TFunc, k: string, fb: string, p?: Record<string, unknown>) => {
+  const raw = t(k, p);
+  const chosen = raw === k ? fb : raw;
+  return fmt(chosen, p);
+};
+
+/* --- time “ago” con i18n y params --- */
+function ago(iso: string, t: TFunc) {
   const d = new Date(iso).getTime();
   const diff = Math.max(0, Date.now() - d);
   const m = Math.floor(diff / 60000);
@@ -42,7 +54,7 @@ function ago(iso: string, t: (k: string, p?: Record<string, unknown>) => string)
   return tv(t, 'alerts.time.d', '{{count}}d', { count: dys });
 }
 
-/* --- severity pill that uses i18n labels --- */
+/* --- severity pill --- */
 function Pill({ sev }: { sev: Severity }) {
   const { t } = useI18n();
   const styles =
@@ -67,10 +79,138 @@ function Section({ children }: { children: React.ReactNode }) {
   return <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">{children}</div>;
 }
 
+/* --- Icono con alto contraste + aro según severidad --- */
+function IconBadge({ src, sev, size = 48 }: { src: string; sev: Severity; size?: number }) {
+  const ring =
+    sev === 'high'
+      ? 'ring-rose-400/70 bg-white'
+      : sev === 'medium'
+        ? 'ring-amber-300/80 bg-white'
+        : 'ring-emerald-400/70 bg-white';
+  const px = size;
+  return (
+    <div
+      className={`grid place-items-center rounded-2xl ring-4 shadow-lg ${ring}`}
+      style={{ width: px, height: px }}
+    >
+      <Image
+        src={src}
+        alt=""
+        width={Math.round(px * 0.46)}
+        height={Math.round(px * 0.46)}
+        className="brightness-0"
+      />
+    </div>
+  );
+}
+
+/* --- hero de alerta con gradiente por severidad y chip de tiempo --- */
+function AlertHero({
+  type,
+  sev,
+  title,
+  createdAt,
+}: {
+  type: AlertType;
+  sev: Severity;
+  title: string;
+  createdAt: string;
+}) {
+  const { t } = useI18n();
+  const grad =
+    sev === 'high'
+      ? 'from-rose-500/25 via-rose-500/10 to-transparent'
+      : sev === 'medium'
+        ? 'from-amber-400/30 via-amber-400/10 to-transparent'
+        : 'from-emerald-500/25 via-emerald-500/10 to-transparent';
+  return (
+    <div className={`relative overflow-hidden rounded-2xl ring-1 ring-black/5`}>
+      <div className={`absolute inset-0 bg-gradient-to-br ${grad}`} />
+      <div className="relative flex items-center gap-3 p-4">
+        <IconBadge src={ICONS[type]} sev={sev} size={56} />
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <Pill sev={sev} />
+            <span className="text-neutral-400 text-xs">·</span>
+            <span className="text-xs text-neutral-300">{ago(createdAt, t)}</span>
+          </div>
+          <h2 className="mt-1 truncate text-lg font-semibold">{title}</h2>
+          <p className="mt-0.5 text-xs text-neutral-400">
+            {type === 'temp'
+              ? tv(t, 'alerts.type.temp', 'Temperature')
+              : type === 'humidity'
+                ? tv(t, 'alerts.type.humidity', 'Humidity')
+                : tv(t, 'alerts.type.queen', 'Queen')}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* --- tarjeta contextual (usa claves existentes de analysis.recs.*) --- */
+function ContextCard({ type }: { type: AlertType }) {
+  const { t } = useI18n();
+
+  const items =
+    type === 'temp'
+      ? [
+          tv(t, 'analysis.recs.inspectBody', 'Improve ventilation; monitor temperature spikes.'),
+          tv(t, 'analysis.recs.spaceBody', 'Add/remove supers to prevent swarming.'),
+        ]
+      : type === 'humidity'
+        ? [
+            tv(t, 'analysis.recs.foodBody', 'Ensure enough food; supplement if needed.'),
+            tv(t, 'analysis.recs.inspectBody', 'Check for disease/pests, ensure ventilation.'),
+          ]
+        : [
+            tv(t, 'analysis.recs.queenBody', 'Look for a consistent brood pattern.'),
+            tv(t, 'analysis.recs.inspectBody', 'Inspect hive health this week.'),
+          ];
+
+  const title = tv(t, 'analysis.recs.title', 'Recommendations');
+
+  return (
+    <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
+      <div className="mb-2 flex items-center gap-2">
+        <div className="h-6 w-6 rounded-md bg-amber-400/20 grid place-items-center text-amber-300 ring-1 ring-amber-400/30">
+          ★
+        </div>
+        <p className="text-sm font-semibold">{title}</p>
+      </div>
+      <ul className="ml-4 list-disc space-y-1 text-sm text-neutral-200">
+        {items.map((it, i) => (
+          <li key={i}>{it}</li>
+        ))}
+      </ul>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Link
+          href="/analysis/recommendations"
+          className="h-10 rounded-xl bg-amber-400 text-center text-sm font-semibold text-black hover:bg-amber-300"
+        >
+          {tv(t, 'hive.advanced.openRecs', 'Open Recommendations')}
+        </Link>
+        <Link
+          href="/map"
+          className="h-10 rounded-xl bg-neutral-800 text-center text-sm font-semibold text-white ring-1 ring-black/5 hover:bg-neutral-700"
+        >
+          {tv(t, 'map.title', 'Map')}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* --- helper para título localizable sin any --- */
+type Localizable = { titleKey?: string };
+const asLocalizable = (x: AlertItem): x is AlertItem & { titleKey: string } =>
+  typeof (x as Partial<Localizable>).titleKey === 'string';
+
 export default function AlertDetailClient({ id }: { id: string }) {
   const { t } = useI18n();
   const router = useRouter();
-  const item: AlertItem | undefined = useMemo(() => getMockAlerts().find((x) => x.id === id), [id]);
+  const item = useMemo(() => getMockAlerts().find((x) => x.id === id), [id]);
   const [saved, setSaved] = useState(false);
 
   if (!item) {
@@ -97,7 +237,6 @@ export default function AlertDetailClient({ id }: { id: string }) {
   }
 
   const goToHive = () => {
-    // Guarda el highlight para MapClient
     try {
       localStorage.setItem(
         'map.highlight',
@@ -109,7 +248,6 @@ export default function AlertDetailClient({ id }: { id: string }) {
         })
       );
     } catch {}
-    // También pasa hiveId por query para que MapClient resalte de inmediato
     router.push(`/map?hiveId=${encodeURIComponent(item.hive.id)}`);
   };
 
@@ -125,6 +263,8 @@ export default function AlertDetailClient({ id }: { id: string }) {
       router.replace('/alerts');
     }
   };
+
+  const localizedTitle = asLocalizable(item) ? tv(t, item.titleKey, item.title) : item.title;
 
   return (
     <CardShell
@@ -148,40 +288,36 @@ export default function AlertDetailClient({ id }: { id: string }) {
         </div>
       )}
 
-      {/* CAUSE */}
-      <Section>
-        <div className="flex items-start gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-neutral-800">
-            <Image src={ICONS[item.type]} alt="" width={22} height={22} />
-          </div>
-        </div>
-        <p className="mt-3 text-sm font-semibold">{tv(t, 'alerts.detail.cause', 'Cause')}</p>
-        <p className="mt-1 text-neutral-300">{item.title}</p>
-        <div className="mt-3 flex items-center gap-2 text-sm text-neutral-400">
-          <Pill sev={item.severity} />
-          <span>·</span>
-          <span>{ago(item.createdAt, t)}</span>
-        </div>
-      </Section>
+      {/* HERO */}
+      <AlertHero
+        type={item.type}
+        sev={item.severity}
+        title={localizedTitle}
+        createdAt={item.createdAt}
+      />
 
       {/* LINKED HIVE */}
       <Section>
-        <p className="text-sm font-semibold">{tv(t, 'alerts.detail.linkedHive', 'Linked Hive')}</p>
-        <div className="mt-2 flex items-center gap-3 rounded-xl bg-neutral-800 p-3">
-          <Image src={HONEY_ICON} alt="" width={32} height={32} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-medium">{item.hive.name}</p>
-            <p className="text-sm text-neutral-400">ID: {item.hive.id}</p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Image src={HONEY_ICON} alt="" width={32} height={32} />
+            <div className="min-w-0">
+              <p className="truncate font-medium">{item.hive.name}</p>
+              <p className="text-xs text-neutral-400">ID: {item.hive.id}</p>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={goToHive}
+            className="h-9 rounded-xl bg-amber-400 px-3 text-sm font-semibold text-black ring-1 ring-black/5 hover:bg-amber-300"
+          >
+            {tv(t, 'alerts.detail.goHive', 'Go to Hive')}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={goToHive}
-          className="mt-3 h-11 w-full rounded-2xl bg-amber-400 font-semibold text-black ring-1 ring-black/5 hover:bg-amber-300"
-        >
-          {tv(t, 'alerts.detail.goHive', 'Go to Hive')}
-        </button>
       </Section>
+
+      {/* CONTEXTO / RECOMENDACIONES */}
+      <ContextCard type={item.type} />
 
       {/* RESOLVE */}
       <button

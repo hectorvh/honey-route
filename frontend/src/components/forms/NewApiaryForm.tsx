@@ -26,7 +26,7 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
 
   const getMyLocation = () => {
     if (!('geolocation' in navigator)) {
-      setErr('Geolocation no disponible en este dispositivo.');
+      setErr(t('apiary.errors.noGeo') || t('map.noGeo') || 'Geolocation not available.');
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -34,7 +34,7 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
         setLat(String(p.coords.latitude.toFixed(6)));
         setLng(String(p.coords.longitude.toFixed(6)));
       },
-      () => setErr('Permiso de ubicación denegado.'),
+      () => setErr(t('apiary.errors.geoDenied') || t('map.geoDenied') || 'Permission denied.'),
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
     );
   };
@@ -42,7 +42,7 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErr(null);
-    if (!name.trim()) return setErr(t('apiary.errors.nameReq') || 'Nombre requerido.');
+    if (!name.trim()) return setErr(t('apiary.errors.nameReq') || 'Name required.');
 
     setLoading(true);
     try {
@@ -67,12 +67,9 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
       const rawH = localStorage.getItem('hr.hives');
       if (!rawH) localStorage.setItem('hr.hives', JSON.stringify([]));
 
-      // Marca sesión local por si hiciera falta
-      localStorage.setItem('hr.authed', '1');
-
       onDone?.();
     } catch {
-      setErr(t('common.genericError') || 'No pudimos guardar el apiario.');
+      setErr(t('common.genericError') || 'Could not save apiary.');
     } finally {
       setLoading(false);
     }
@@ -83,10 +80,10 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
       {/* Nombre */}
       <div>
         <label className="mb-2 block text-sm text-neutral-400">
-          {t('apiary.name') || 'Nombre del apiario'}
+          {t('apiary.nameLabel') || t('apiary.name') || 'Apiary Name'}
         </label>
         <Input
-          placeholder={t('apiary.namePh') || 'Ej. Golden Fields Apiary'}
+          placeholder={t('apiary.namePh') || 'e.g. Golden Fields Apiary'}
           value={name}
           onChange={(ev) => setName(ev.target.value)}
         />
@@ -95,10 +92,10 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
       {/* Ubicación libre */}
       <div>
         <label className="mb-2 block text-sm text-neutral-400">
-          {t('apiary.locationOpt') || 'Ubicación (opcional)'}
+          {t('apiary.locationLabel') || t('apiary.locationOpt') || 'Location (optional)'}
         </label>
         <Input
-          placeholder={t('apiary.locationPh') || 'Ciudad, estado/país'}
+          placeholder={t('apiary.locationPh') || 'City, state/country'}
           value={location}
           onChange={(ev) => setLocation(ev.target.value)}
         />
@@ -107,7 +104,7 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
       {/* Coordenadas */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Lat</label>
+          <label className="mb-2 block text-sm text-neutral-400">{t('apiary.lat') || 'Lat'}</label>
           <Input
             inputMode="decimal"
             placeholder="-15.793889"
@@ -116,7 +113,7 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
           />
         </div>
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Lng</label>
+          <label className="mb-2 block text-sm text-neutral-400">{t('apiary.lng') || 'Lng'}</label>
           <Input
             inputMode="decimal"
             placeholder="-47.882778"
@@ -131,30 +128,34 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
           onClick={getMyLocation}
           className="text-xs underline underline-offset-2 text-amber-400"
         >
-          Usar mi ubicación
+          {t('apiary.useMyLocation') || 'Use my location'}
         </button>
       </div>
 
       {/* Elevación y manejo */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Elevación (m)</label>
+          <label className="mb-2 block text-sm text-neutral-400">
+            {t('apiary.elevationLabel') || 'Elevation (m)'}
+          </label>
           <Input
             inputMode="numeric"
-            placeholder="Ej. 1200"
+            placeholder={t('apiary.elevationPh') || 'e.g. 1200'}
             value={elevation}
             onChange={(ev) => setElevation(ev.target.value)}
           />
         </div>
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Manejo</label>
+          <label className="mb-2 block text-sm text-neutral-400">
+            {t('apiary.mgmtLabel') || 'Management'}
+          </label>
           <Select<Mgmt>
             value={mgmt}
             onChange={setMgmt}
             options={[
-              { label: 'Integrado', value: 'integrated' },
-              { label: 'Convencional', value: 'conventional' },
-              { label: 'Orgánico', value: 'organic' },
+              { label: t('apiary.mgmt.integrated') || 'Integrated', value: 'integrated' },
+              { label: t('apiary.mgmt.conventional') || 'Conventional', value: 'conventional' },
+              { label: t('apiary.mgmt.organic') || 'Organic', value: 'organic' },
             ]}
           />
         </div>
@@ -162,10 +163,12 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
 
       {/* Notas */}
       <div>
-        <label className="mb-2 block text-sm text-neutral-400">Notas (opcional)</label>
+        <label className="mb-2 block text-sm text-neutral-400">
+          {t('apiary.notesLabel') || 'Notes (optional)'}
+        </label>
         <textarea
           className="min-h-[90px] w-full rounded-xl bg-neutral-900 p-3 text-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-amber-400"
-          placeholder="Flora de la zona, accesos, riego, etc."
+          placeholder={t('apiary.notesPh') || 'Local flora, access, irrigation, etc.'}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
@@ -174,7 +177,7 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
       {err && <p className="text-sm text-rose-400">{err}</p>}
 
       <Button type="submit" className="h-12 w-full rounded-2xl" disabled={loading}>
-        {loading ? '...' : `+ ${t('apiary.createCta') || 'Crear apiario'}`}
+        {loading ? '...' : `+ ${t('apiary.createCta') || 'Create Apiary'}`}
       </Button>
     </form>
   );

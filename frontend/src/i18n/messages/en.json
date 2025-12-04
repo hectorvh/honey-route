@@ -30,6 +30,29 @@
     "hiveTypeLabel": "Hive Type",
     "hiveTypePh": "Select Hive Type",
     "createCta": "Create Apiary",
+    "details": { "title": "Apiary Details" },
+    "lat": "Lat",
+    "lng": "Lng",
+    "useMyLocation": "Use my location",
+    "elevationLabel": "Elevation (m)",
+    "elevationPh": "e.g. 1200",
+    "mgmtLabel": "Management",
+    "notesLabel": "Notes (optional)",
+    "notesPh": "Local flora, access, irrigation, etc.",
+    "tabs": {
+      "status": "Status",
+      "history": "History",
+      "recs": "Recommendations",
+      "media": "Media",
+      "evidence": "Evidence"
+    },
+    "history": {
+      "varroa": "Varroa (%)",
+      "weight": "Hive Weight (kg)",
+      "temp": "Nest Temp (°C)",
+      "humidity": "Humidity (%)",
+      "flight": "Flight Activity"
+    },
     "types": {
       "langstroth": "Langstroth",
       "topbar": "Top-bar",
@@ -37,7 +60,78 @@
     },
     "errors": {
       "nameReq": "Please enter a name.",
+      "noGeo": "Geolocation not available",
+      "geoDenied": "Permission denied",
       "nameRequired": "Please enter a name."
+    },
+    "fields": {
+      "lat": "Lat",
+      "lng": "Lng",
+      "elevationLabel": "Elevation (m)",
+      "elevationPh": "e.g. 1200",
+      "mgmtLabel": "Management",
+      "notesLabel": "Notes (optional)",
+      "notesPh": "Flora, access, irrigation, etc."
+    },
+    "actions": {
+      "useMyLocation": "Use my location"
+    },
+    "mgmt": {
+      "integrated": "Integrated",
+      "conventional": "Conventional",
+      "organic": "Organic"
+    }
+  },
+  "hive": {
+    "newTitle": "New Hive",
+    "newSubtitle": "It will be saved to your active apiary.",
+    "fields": {
+      "kind": "Type",
+      "label": "Label / Name",
+      "lat": "Lat",
+      "lng": "Lng",
+      "notes": "Notes (optional)"
+    },
+    "actions": {
+      "useMyLocation": "Use my location"
+    },
+    "placeholders": {
+      "label": "e.g. Hive A-01",
+      "notes": "Observations, queen, treatment, etc."
+    },
+    "errors": {
+      "noApiary": "No active apiary.",
+      "labelReq": "Please add a label/name.",
+      "coordsReq": "Lat/Lng required (use “My location”).",
+      "saveFail": "Could not save your hive."
+    },
+    "saveCta": "Save hive",
+    "kpi": {
+      "status": "Status",
+      "health": "Health",
+      "queen": "Queen Presence",
+      "brood": "Brood Pattern",
+      "honey": "Honey Stores",
+      "pollen": "Pollen Stores",
+      "population": "Bee Population",
+      "disease": "Disease/Pest",
+      "active": "Active",
+      "lastInspection100": "100% last inspection",
+      "noneDetected": "None detected"
+    },
+    "advanced": {
+      "title": "Advanced KPIs",
+      "varroa": "Varroa Infestation",
+      "varroaHint": "Action < 3–5%",
+      "yield": "Est. Honey Yield",
+      "yieldTarget": "Target 30kg",
+      "weight": "Hive Weight",
+      "mortality": "Daily Mortality",
+      "temp": "Nest Temperature",
+      "gases": "CO₂ / O₂ Levels",
+      "agrochem": "Agrochemical Exposure",
+      "openRecs": "Open Recommendations",
+      "evidenceHint": "Slide to compare “Before” vs “After”."
     }
   },
   "common": {
@@ -77,6 +171,9 @@
   "home": {
     "title": "My Apiaries",
     "capture": "Capture / Analyze",
+    "addHive": "Add Hive",
+    "newApiary": "New Apiary",
+    "empty": "No apiaries yet. Create your first one!",
     "hivesCount": "{{count}} hives",
     "status": {
       "healthy": "Healthy",
@@ -93,10 +190,20 @@
   "map": {
     "title": "Map",
     "searchPh": "Search hives or locations",
+    "search": "Search",
+    "hives": "Hives",
     "comingSoon": "Floral maps & risk zones coming in next versions",
     "locate": "Locate me",
     "noGeo": "Geolocation not available",
-    "geoDenied": "Permission denied"
+    "geoDenied": "Permission denied",
+    "empty": "No hives to show",
+    "zoomHere": "Zoom here",
+    "youAreHere": "You are here",
+    "highlight": "Highlighted",
+    "a11y": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out"
+    }
   },
   "camera": {
     "title": "Camera",
@@ -142,6 +249,9 @@
       "detections": "Detections",
       "sev": { "low": "Low", "medium": "Medium", "high": "High" },
       "none": "No issues detected.",
+      "imagesReviewed": "{{count}} images reviewed",
+      "timeTaken": "Processed in {{sec}}s",
+      "riskShort": "RISK",
       "seeRecs": "See recommendations",
       "logAction": "Log action"
     },
@@ -245,13 +355,13 @@
     "denied": "Permission was not granted."
   },
   "alerts": {
+    "title": "Alerts",
+    "filter": { "sev": "Severity", "type": "Type", "all": "All" },
+    "type": { "temp": "Temperature", "humidity": "Humidity", "queen": "Queen" },
+    "sort": { "label": "Sort by", "recent": "Most recent", "severity": "Severity" },
+    "empty": "No matching alerts",
     "sev": { "high": "High", "medium": "Medium", "low": "Low" },
-    "time": {
-      "now": "now",
-      "m": "{{count}}m",
-      "h": "{{count}}h",
-      "d": "{{count}}d"
-    },
+    "time": { "now": "now", "m": "{{count}}m", "h": "{{count}}h", "d": "{{count}}d" },
     "detail": {
       "title": "Alert Details",
       "notFound": "Alert not found",
@@ -260,6 +370,12 @@
       "goHive": "Go to Hive",
       "resolve": "Mark as Resolved",
       "resolvedToast": "Marked as resolved"
+    },
+    "items": {
+      "a1": { "title": "High temperature detected", "list": "High Temperature" },
+      "a2": { "title": "Humidity out of optimal range", "list": "Humidity Alert" },
+      "a3": { "title": "Queen status requires attention", "list": "Queen Status" },
+      "a4": { "title": "Low temperature detected", "list": "Low Temperature" }
     }
   }
 }

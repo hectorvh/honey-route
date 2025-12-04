@@ -1,4 +1,3 @@
-// frontend/src/app/(app)/hives/new/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -11,6 +10,7 @@ import NavTab from '@/components/NavTab';
 import Input from '@/components/ui/Input';
 import Select from '@/components/forms/Select';
 import Button from '@/components/ui/Button';
+import { useI18n } from '@/i18n/I18nProvider';
 
 type HiveKind = 'langstroth' | 'top_bar' | 'warre' | 'flow' | 'other';
 interface Hive {
@@ -23,7 +23,10 @@ interface Hive {
   lng: number;
 }
 
+const tv = (t: (k: string) => string, k: string, fb: string) => (t(k) === k ? fb : t(k));
+
 export default function NewHivePage() {
+  const { t } = useI18n();
   const router = useRouter();
 
   const [apiaryId, setApiaryId] = useState<string | null>(null);
@@ -35,26 +38,32 @@ export default function NewHivePage() {
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Necesitamos un apiario activo; si no existe, manda a crear uno
   useEffect(() => {
     try {
       const raw = localStorage.getItem('hr.apiary');
-      if (!raw) return router.replace('/apiaries/new'); // primero crea apiario
-      const a = JSON.parse(raw) as { id?: string };
+      if (!raw) return router.replace('/apiaries/new');
+      const a = JSON.parse(raw) as { id?: string; lat?: number | null; lng?: number | null };
       if (!a?.id) return router.replace('/apiaries/new');
       setApiaryId(a.id);
+      // Prefill coords si el apiario tiene lat/lng guardados
+      if (typeof a.lat === 'number') setLat(String(a.lat));
+      if (typeof a.lng === 'number') setLng(String(a.lng));
     } catch {
       router.replace('/apiaries/new');
     }
   }, [router]);
 
   const getMyLocation = () => {
-    if (!('geolocation' in navigator)) return setErr('Geolocation no disponible.');
+    if (!('geolocation' in navigator)) {
+      return setErr(tv(t, 'map.noGeo', 'Geolocation not available'));
+    }
     navigator.geolocation.getCurrentPosition(
       (p) => {
         setLat(String(p.coords.latitude.toFixed(6)));
         setLng(String(p.coords.longitude.toFixed(6)));
       },
-      () => setErr('Permiso de ubicación denegado.'),
+      () => setErr(tv(t, 'map.geoDenied', 'Permission denied')),
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
     );
   };
@@ -93,6 +102,7 @@ export default function NewHivePage() {
       return [];
     }
   }
+
   function saveHives(hives: Hive[]) {
     localStorage.setItem('hr.hives', JSON.stringify(hives));
   }
@@ -100,9 +110,11 @@ export default function NewHivePage() {
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
-    if (!apiaryId) return setErr('No hay apiario activo.');
-    if (!label.trim()) return setErr('Pon un nombre/etiqueta para la colmena.');
-    if (!lat || !lng) return setErr('Lat/Lng requeridos (puedes usar “mi ubicación”).');
+
+    if (!apiaryId) return setErr(tv(t, 'hive.errors.noApiary', 'No active apiary.'));
+    if (!label.trim()) return setErr(tv(t, 'hive.errors.labelReq', 'Please add a label/name.'));
+    if (!lat || !lng)
+      return setErr(tv(t, 'hive.errors.coordsReq', 'Lat/Lng required (use “My location”).'));
 
     setLoading(true);
     try {
@@ -119,14 +131,16 @@ export default function NewHivePage() {
       arr.push(hive);
       saveHives(arr);
 
+      // resaltar en mapa al abrir
       localStorage.setItem(
         'map.highlight',
         JSON.stringify({ hiveId: hive.id, name: hive.label, lat: hive.lat, lng: hive.lng })
       );
 
-      router.replace('/apiaries'); // ✅ vuelve al home de apiarios
+      // Regresar al home de apiarios (como pediste)
+      router.replace('/apiaries');
     } catch {
-      setErr('No pudimos guardar tu colmena.');
+      setErr(tv(t, 'hive.errors.saveFail', 'Could not save your hive.'));
     } finally {
       setLoading(false);
     }
@@ -144,29 +158,35 @@ export default function NewHivePage() {
       contentClassName="pb-24 pt-2"
       footer={<NavTab active="home" />}
     >
-      <h1 className="text-[22px] font-bold">Nueva colmena</h1>
-      <p className="mt-1 text-sm text-neutral-400">Se guardará en tu apiario activo.</p>
+      <h1 className="text-[22px] font-bold">{tv(t, 'hive.newTitle', 'New Hive')}</h1>
+      <p className="mt-1 text-sm text-neutral-400">
+        {tv(t, 'hive.newSubtitle', 'It will be saved to your active apiary.')}
+      </p>
 
       <form onSubmit={save} className="mt-4 grid max-w-sm grid-cols-1 gap-3">
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Tipo</label>
+          <label className="mb-2 block text-sm text-neutral-400">
+            {tv(t, 'hive.fields.kind', 'Type')}
+          </label>
           <Select<HiveKind>
             value={kind}
             onChange={setKind}
             options={[
-              { label: 'Langstroth', value: 'langstroth' },
+              { label: tv(t, 'apiary.types.langstroth', 'Langstroth'), value: 'langstroth' },
               { label: 'Top-bar', value: 'top_bar' },
               { label: 'Warré', value: 'warre' },
               { label: 'Flow', value: 'flow' },
-              { label: 'Otro', value: 'other' },
+              { label: tv(t, 'common.other', 'Other'), value: 'other' },
             ]}
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Etiqueta / nombre</label>
+          <label className="mb-2 block text-sm text-neutral-400">
+            {tv(t, 'hive.fields.label', 'Label / Name')}
+          </label>
           <Input
-            placeholder="Ej. Hive A-01"
+            placeholder={tv(t, 'hive.placeholders.label', 'e.g. Hive A-01')}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
           />
@@ -174,7 +194,9 @@ export default function NewHivePage() {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="mb-2 block text-sm text-neutral-400">Lat</label>
+            <label className="mb-2 block text-sm text-neutral-400">
+              {tv(t, 'hive.fields.lat', 'Lat')}
+            </label>
             <Input
               inputMode="decimal"
               placeholder="-15.79"
@@ -183,7 +205,9 @@ export default function NewHivePage() {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm text-neutral-400">Lng</label>
+            <label className="mb-2 block text-sm text-neutral-400">
+              {tv(t, 'hive.fields.lng', 'Lng')}
+            </label>
             <Input
               inputMode="decimal"
               placeholder="-47.88"
@@ -199,15 +223,17 @@ export default function NewHivePage() {
             onClick={getMyLocation}
             className="text-xs text-amber-400 underline underline-offset-2"
           >
-            Usar mi ubicación
+            {tv(t, 'hive.actions.useMyLocation', 'Use my location')}
           </button>
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-neutral-400">Notas (opcional)</label>
+          <label className="mb-2 block text-sm text-neutral-400">
+            {tv(t, 'hive.fields.notes', 'Notes (optional)')}
+          </label>
           <textarea
             className="min-h-[80px] w-full rounded-xl bg-neutral-900 p-3 text-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            placeholder="Observaciones, reina, tratamiento, etc."
+            placeholder={tv(t, 'hive.placeholders.notes', 'Observations, queen, treatment, etc.')}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -216,7 +242,7 @@ export default function NewHivePage() {
         {err && <p className="text-sm text-rose-400">{err}</p>}
 
         <Button type="submit" className="h-12 w-full rounded-2xl" disabled={loading}>
-          {loading ? '...' : 'Guardar colmena'}
+          {loading ? '...' : tv(t, 'hive.saveCta', 'Save hive')}
         </Button>
       </form>
     </CardShell>

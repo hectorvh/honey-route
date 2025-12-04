@@ -80,7 +80,7 @@ importers:
         specifier: ^22.10.7
         version: 22.18.3
       '@types/supertest':
-        specifier: ^6.0.2
+        specifier: ^6.0.3
         version: 6.0.3
       eslint:
         specifier: ^9.18.0
