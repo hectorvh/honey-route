@@ -32,8 +32,8 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      // ✅ Siempre dirigir a crear apiario tras login normal
-      router.replace('/apiaries/new');
+      // Router to home (apiaries) after login or signup
+      router.replace('/apiaries');
     } catch {
       setErr(tv(t, 'auth.notAuthenticated', 'No pudimos iniciar sesión.'));
     } finally {
@@ -97,7 +97,7 @@ export default function LoginPage() {
           <button
             className="underline-offset-4 hover:underline"
             onClick={() => {
-              // ✅ Invitado siempre a la lista de apiarios
+              // Router to home (apiaries) after login or signup
               router.replace('/apiaries');
             }}
           >
