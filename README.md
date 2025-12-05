@@ -217,7 +217,7 @@ Probar en el teléfono (misma red)
 ---
 
 ## 📸 Screenshots / Demo
-*(Add here Figma prototype, screenshots, or deployment link)*
+https://honeyroute.netlify.app/onboarding
 
 ---
 
