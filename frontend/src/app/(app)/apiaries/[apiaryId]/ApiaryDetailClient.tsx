@@ -1,4 +1,3 @@
-//frontend/src/app/(app)/apiaries/[apiaryId]/ApiaryDetailClient.tsx
 'use client';
 
 import Image from 'next/image';
@@ -11,10 +10,17 @@ import LangToggle from '@/components/LangToggle';
 import BackBtn from '@/components/BackBtn';
 import NavTab from '@/components/NavTab';
 import { useI18n } from '@/i18n/I18nProvider';
-import { getMockAlerts } from '@/app/(app)/alerts/mock';
+import { getDemoApiaries, getDemoHives, type DemoApiary } from '@/mocks/demoGuestProfile';
+import {
+  useUnits,
+  toDisplayTemp,
+  toDisplayWeightKg,
+  toDisplayElevationMeters,
+} from '../../settings/units/units';
 
 type TabKey = 'status' | 'history' | 'recs' | 'media' | 'evidence';
 type Severity = 'ok' | 'warn' | 'crit';
+
 type KPI = {
   key: string;
   label: string;
@@ -23,10 +29,29 @@ type KPI = {
   icon: string;
   hint?: string;
 };
-type Hive = { id: string; apiary_id: string; label: string; lat?: number; lng?: number };
 
 type HealthState = 'healthy' | 'attention' | 'critical';
 type OperationalState = 'active' | 'paused';
+
+type Hive = {
+  id: string;
+  apiary_id: string;
+  label: string;
+  lat?: number;
+  lng?: number;
+};
+
+type ApiaryLike = {
+  id: string;
+  name: string;
+  location?: string | null;
+  elevation?: number;
+  mgmt?: 'integrated' | 'conventional' | 'organic';
+  notes?: string | null;
+  status?: HealthState;
+  owner?: 'azul' | 'hector';
+  imageUrl?: string;
+};
 
 type EnvMetrics = {
   temp: number;
@@ -40,17 +65,68 @@ type EnvMetrics = {
 const tv = (t: (k: string) => string, k: string, fb: string) => (t(k) === k ? fb : t(k));
 
 /* ---------------- data loaders ---------------- */
-function loadApiary(apiaryId: string) {
-  try {
-    const raw = localStorage.getItem('hr.apiary');
-    if (!raw) return null;
-    const a = JSON.parse(raw) as { id: string; name: string; location?: string | null };
-    return a.id === apiaryId ? a : null;
-  } catch {
-    return null;
+function loadApiary(apiaryId: string): ApiaryLike | null {
+  // 1) Intentar primero con mocks demo (Azul / Héctor)
+  const demo: DemoApiary | undefined = getDemoApiaries().find((a) => a.id === apiaryId);
+  if (demo) {
+    return {
+      id: demo.id,
+      name: demo.name,
+      location: demo.location,
+      elevation: demo.elevation,
+      mgmt: demo.mgmt,
+      notes: demo.notes,
+      status: demo.status,
+      owner: demo.owner,
+      imageUrl: demo.imageUrl,
+    };
   }
+
+  // 2) Luego intentamos con apiarios creados localmente en hr.apiaries
+  if (typeof window !== 'undefined') {
+    try {
+      const rawList = localStorage.getItem('hr.apiaries');
+      if (rawList) {
+        const arr = JSON.parse(rawList) as Array<Partial<ApiaryLike> & { id?: string }>;
+        const found = arr.find((a) => a.id === apiaryId);
+        if (found && found.id) {
+          return {
+            id: found.id,
+            name: found.name ?? 'Apiary',
+            location: found.location ?? null,
+            elevation: found.elevation,
+            mgmt: found.mgmt,
+            notes: found.notes ?? null,
+            status: (found.status as HealthState | undefined) ?? 'healthy',
+            owner: found.owner,
+            imageUrl: found.imageUrl,
+          };
+        }
+      }
+
+      // 3) Compat: último apiario activo guardado en hr.apiary
+      const raw = localStorage.getItem('hr.apiary');
+      if (raw) {
+        const a = JSON.parse(raw) as { id?: string; name?: string; location?: string | null };
+        if (a.id === apiaryId) {
+          return {
+            id: a.id,
+            name: a.name ?? 'Apiary',
+            location: a.location ?? null,
+            status: 'healthy',
+          };
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return null;
 }
+
 function loadHives(apiaryId: string): Hive[] {
+  if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem('hr.hives');
     const parsed = raw ? (JSON.parse(raw) as unknown) : [];
@@ -88,25 +164,22 @@ function loadHives(apiaryId: string): Hive[] {
     return [];
   }
 }
-function defaultFromAlerts(apiaryId: string) {
-  const uniq = new Map<string, Hive>();
-  for (const a of getMockAlerts()) {
-    uniq.set(a.hive.id, {
-      id: a.hive.id,
-      apiary_id: apiaryId,
-      label: a.hive.name,
-      lat: a.hive.lat,
-      lng: a.hive.lng,
-    });
-  }
-  return { name: "Azul's Bees", hives: Array.from(uniq.values()) };
+
+function getDemoHivesForApiary(apiaryId: string): Hive[] {
+  return getDemoHives(apiaryId).map((h) => ({
+    id: h.id,
+    apiary_id: h.apiaryId,
+    label: h.label,
+    lat: h.lat,
+    lng: h.lng,
+  }));
 }
 
 /* ---------------- tiny charts (SVG puros) ---------------- */
 function Sparkline({ data, h = 42, w = 140 }: { data: number[]; h?: number; w?: number }) {
   if (!data.length) return null;
-  const min = Math.min(...data),
-    max = Math.max(...data);
+  const min = Math.min(...data);
+  const max = Math.max(...data);
   const xStep = w / (data.length - 1 || 1);
   const y = (v: number) => h - (max === min ? h / 2 : ((v - min) / (max - min)) * (h - 6)) - 3;
   const d = data.map((v, i) => `${i ? 'L' : 'M'} ${i * xStep},${y(v)}`).join(' ');
@@ -116,6 +189,7 @@ function Sparkline({ data, h = 42, w = 140 }: { data: number[]; h?: number; w?: 
     </svg>
   );
 }
+
 function RadialGauge({
   value,
   min = 0,
@@ -128,8 +202,8 @@ function RadialGauge({
   label?: string;
 }) {
   const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
-  const R = 26,
-    C = 2 * Math.PI * R;
+  const R = 26;
+  const C = 2 * Math.PI * R;
   const off = C * (1 - pct);
   const color = value >= 6 ? '#ef4444' : value >= 3 ? '#f59e0b' : '#10b981';
   return (
@@ -163,6 +237,7 @@ function RadialGauge({
     </div>
   );
 }
+
 function DonutGauge({
   value,
   max = 30,
@@ -172,9 +247,9 @@ function DonutGauge({
   max?: number;
   unit?: string;
 }) {
+  const R = 26;
+  const C = 2 * Math.PI * R;
   const pct = Math.max(0, Math.min(1, value / max));
-  const R = 26,
-    C = 2 * Math.PI * R;
   const off = C * (1 - pct);
   return (
     <svg width="64" height="64" viewBox="0 0 64 64" className="text-amber-400">
@@ -214,6 +289,7 @@ function DonutGauge({
     </svg>
   );
 }
+
 function BulletBar({
   value,
   min,
@@ -247,7 +323,7 @@ function BulletBar({
       </div>
       <div className="mt-1 flex justify-between text-xs text-neutral-400">
         <span>
-          {min}
+          {min.toFixed(1)}
           {unit}
         </span>
         <span>
@@ -255,13 +331,14 @@ function BulletBar({
           {unit}
         </span>
         <span>
-          {max}
+          {max.toFixed(1)}
           {unit}
         </span>
       </div>
     </div>
   );
 }
+
 function MiniBars({ data }: { data: number[] }) {
   const max = Math.max(...data, 1);
   return (
@@ -276,17 +353,32 @@ function MiniBars({ data }: { data: number[] }) {
     </div>
   );
 }
-function ThermoBar({ value, min = 0, max = 50 }: { value: number; min?: number; max?: number }) {
+
+function ThermoBar({
+  value,
+  min = 0,
+  max = 50,
+  unit = '°C',
+}: {
+  value: number;
+  min?: number;
+  max?: number;
+  unit?: string;
+}) {
   const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
   return (
     <div className="flex items-center gap-2">
       <div className="h-10 w-3 rounded-full bg-neutral-800 overflow-hidden">
         <div className="w-full bg-orange-400" style={{ height: `${pct * 100}%` }} />
       </div>
-      <span className="text-sm text-neutral-300">{value.toFixed(1)}°C</span>
+      <span className="text-sm text-neutral-300">
+        {value.toFixed(1)}
+        {unit}
+      </span>
     </div>
   );
 }
+
 function DualProgress({
   a,
   b,
@@ -379,14 +471,16 @@ function KpiCard({ k }: { k: KPI }) {
     </div>
   );
 }
+
 type Point = { t: string; v: number };
+
 function HistoryRow({ title, unit, data }: { title: string; unit: string; data: Point[] }) {
   return (
     <div className="flex items-center justify-between rounded-2xl bg-neutral-900 p-3 ring-1 ring-black/5">
       <div>
         <p className="font-semibold">{title}</p>
         <p className="text-xs text-neutral-400">
-          {data[data.length - 1]?.v}
+          {data[data.length - 1]?.v.toFixed(1)}
           {unit} · {data[0]?.t}–{data[data.length - 1]?.t}
         </p>
       </div>
@@ -442,7 +536,7 @@ function HealthStatusBadge({ status }: { status: HealthState }) {
       cls: 'bg-emerald-500/90 text-white',
     },
     attention: {
-      text: tv(t, 'home.status.warning', 'Warning'),
+      text: tv(t, 'home.status.attention', 'Needs Attention'),
       cls: 'bg-amber-400 text-black',
     },
     critical: {
@@ -507,13 +601,27 @@ function HiveList({ hives }: { hives: Hive[] }) {
 
 function EnvDashboard({ metrics }: { metrics: EnvMetrics }) {
   const { t } = useI18n();
+  const units = useUnits();
+
+  const tempDisp = toDisplayTemp(metrics.temp, units);
+
   const items = [
-    { key: 'temp', label: 'Temp', value: metrics.temp, unit: '°C' },
-    { key: 'humidity', label: 'Humidity', value: metrics.humidity, unit: '%' },
-    { key: 'co2', label: 'CO₂', value: metrics.co2, unit: 'ppm' },
-    { key: 'no2', label: 'NO₂', value: metrics.no2, unit: 'ppm' },
-    { key: 'pm25', label: 'PM2.5', value: metrics.pm25, unit: 'µg/m³' },
-    { key: 'pm10', label: 'PM10', value: metrics.pm10, unit: 'µg/m³' },
+    {
+      key: 'temp',
+      label: tv(t, 'apiary.env.temp', 'TEMP'),
+      value: tempDisp.value,
+      unit: tempDisp.unit,
+    },
+    {
+      key: 'humidity',
+      label: tv(t, 'apiary.env.humidity', 'HUMIDITY'),
+      value: metrics.humidity,
+      unit: '%',
+    },
+    { key: 'co2', label: tv(t, 'apiary.env.co2', 'CO₂'), value: metrics.co2, unit: 'ppm' },
+    { key: 'no2', label: tv(t, 'apiary.env.no2', 'NO₂'), value: metrics.no2, unit: 'ppm' },
+    { key: 'pm25', label: tv(t, 'apiary.env.pm25', 'PM2.5'), value: metrics.pm25, unit: 'µg/m³' },
+    { key: 'pm10', label: tv(t, 'apiary.env.pm10', 'PM10'), value: metrics.pm10, unit: 'µg/m³' },
   ];
 
   return (
@@ -546,6 +654,7 @@ function ts(days = 14, min = 0, max = 100): Point[] {
   }
   return out;
 }
+
 function buildApiaryHistory(hivesCount: number) {
   const bump = Math.min(6, hivesCount);
   return {
@@ -557,6 +666,7 @@ function buildApiaryHistory(hivesCount: number) {
     mortality: ts(14, 80, 320),
   };
 }
+
 function buildKPIs(hives: Hive[], t: (k: string) => string): KPI[] {
   const clamp = (v: number) => Math.min(100, Math.max(0, Math.round(v)));
   const sev = (v: number): Severity => (v >= 75 ? 'ok' : v >= 50 ? 'warn' : 'crit');
@@ -645,28 +755,48 @@ function BeforeAfter({ beforeSrc, afterSrc }: { beforeSrc: string; afterSrc: str
 export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
   const { t } = useI18n();
   const router = useRouter();
+  const units = useUnits();
+  const [tab, setTab] = useState<TabKey>('status');
+  // 🔹 NUEVO: flag para evitar hydration mismatch con datos aleatorios + units
+  const [mounted, setMounted] = useState(false);
 
-  // sincroniza apiario activo
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const apiary = useMemo(() => loadApiary(apiaryId), [apiaryId]);
+  const demoHivesForApiary = useMemo(() => getDemoHivesForApiary(apiaryId), [apiaryId]);
+
+  const hives = useMemo(() => {
+    const local = loadHives(apiaryId);
+
+    if (!local.length && demoHivesForApiary.length) return demoHivesForApiary;
+    if (!demoHivesForApiary.length) return local;
+
+    // merge: demo + local, prefiriendo local por id
+    const byId = new Map<string, Hive>();
+    demoHivesForApiary.forEach((h) => byId.set(h.id, h));
+    local.forEach((h) => byId.set(h.id, h));
+    return Array.from(byId.values());
+  }, [apiaryId, demoHivesForApiary]);
+
+  const name = apiary?.name ?? 'Apiary';
+
+  // sincroniza apiario activo en localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
       const raw = localStorage.getItem('hr.apiary');
       const saved = raw ? (JSON.parse(raw) as { id?: string; name?: string }) : null;
-      if (!saved || saved.id !== apiaryId) {
-        const fallback = { id: apiaryId, name: 'Apiary' };
-        localStorage.setItem('hr.apiary', JSON.stringify(saved ?? fallback));
+      const nextName = name;
+
+      if (!saved || saved.id !== apiaryId || saved.name !== nextName) {
+        localStorage.setItem('hr.apiary', JSON.stringify({ id: apiaryId, name: nextName }));
       }
-    } catch {}
-  }, [apiaryId]);
-
-  const apiary = useMemo(() => loadApiary(apiaryId), [apiaryId]);
-  const fallback = useMemo(() => defaultFromAlerts(apiaryId), [apiaryId]);
-  const hives = useMemo(() => {
-    const hs = loadHives(apiaryId);
-    return hs.length ? hs : fallback.hives;
-  }, [apiaryId, fallback]);
-
-  const name = apiary?.name ?? fallback.name;
-  const [tab, setTab] = useState<TabKey>('status');
+    } catch {
+      // ignore
+    }
+  }, [apiaryId, name]);
 
   const kpis = useMemo(() => buildKPIs(hives, t), [hives, t]);
   const hist = useMemo(() => buildApiaryHistory(hives.length), [hives.length]);
@@ -714,12 +844,26 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
     [adv, hist]
   );
 
+  // display conversions para advanced KPIs
+  const displayTempNow = toDisplayTemp(adv.tempNow, units);
+  const displayTempMin = toDisplayTemp(25, units);
+  const displayTempMax = toDisplayTemp(45, units);
+
+  const displayWeightNow = toDisplayWeightKg(adv.weightNow, units);
+  const displayWeightMin = toDisplayWeightKg(15, units);
+  const displayWeightMax = toDisplayWeightKg(32, units);
+  const displayWeightTarget = toDisplayWeightKg(adv.weightTarget, units);
+
+  const displayYield = toDisplayWeightKg(adv.estYield, units);
+  const displayYieldMax = toDisplayWeightKg(30, units);
+
   // derivar health_state y last_update a partir de los KPIs/hist
   let derivedHealth: HealthState = 'healthy';
   if (kpis.some((k) => k.sev === 'crit')) derivedHealth = 'critical';
   else if (kpis.some((k) => k.sev === 'warn')) derivedHealth = 'attention';
 
-  const health: HealthState = derivedHealth;
+  // si mock del apiario ya trae status, usarlo
+  const health: HealthState = (apiary?.status as HealthState | undefined) ?? derivedHealth;
   const operational: OperationalState = 'active'; // más adelante podemos leerlo de BD
   const lastUpdateLabel =
     hist.temp[hist.temp.length - 1]?.t ?? new Date().toISOString().slice(0, 10);
@@ -768,6 +912,49 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
         </button>
       </header>
 
+      {/* Bloque con detalles del apiario (location, mgmt, notas, owner) */}
+      {apiary && (
+        <section className="mt-3 rounded-2xl bg-neutral-900/80 p-3 ring-1 ring-black/5 text-xs text-neutral-300">
+          {apiary.location && (
+            <p className="text-sm font-semibold text-neutral-100">{apiary.location}</p>
+          )}
+
+          <div className="mt-1 flex flex-wrap gap-2">
+            {apiary.mgmt && (
+              <span className="rounded-full bg-black/40 px-2 py-0.5 text-[11px]">
+                {tv(
+                  t,
+                  `apiary.mgmt.${apiary.mgmt}`,
+                  apiary.mgmt === 'organic'
+                    ? 'Organic management'
+                    : apiary.mgmt === 'integrated'
+                      ? 'Integrated management'
+                      : 'Conventional management'
+                )}
+              </span>
+            )}
+            {apiary.elevation != null &&
+              (() => {
+                const elev = toDisplayElevationMeters(apiary.elevation, units);
+                return (
+                  <span className="rounded-full bg-black/40 px-2 py-0.5 text-[11px]">
+                    {elev.value.toFixed(0)} {elev.unit}
+                  </span>
+                );
+              })()}
+            {apiary.owner && (
+              <span className="rounded-full bg-black/40 px-2 py-0.5 text-[11px] capitalize">
+                {tv(t, 'apiary.ownerLabel', 'Owner')}: {apiary.owner}
+              </span>
+            )}
+          </div>
+
+          {apiary.notes && (
+            <p className="mt-2 text-xs text-neutral-400 line-clamp-3">{apiary.notes}</p>
+          )}
+        </section>
+      )}
+
       {/* Acciones del apiario */}
       <div className="mt-3 grid grid-cols-2 gap-2">
         <button
@@ -789,8 +976,8 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
       {/* Bloque Hives v1.2 */}
       <HiveList hives={hives} />
 
-      {/* Bloque Dashboard ambiental v1.2 */}
-      <EnvDashboard metrics={envMetrics} />
+      {/* Bloque Dashboard ambiental v1.2 (solo cliente para evitar hydration mismatch) */}
+      {mounted && <EnvDashboard metrics={envMetrics} />}
 
       {/* Bloque Sensor Setup v1.2 */}
       <section className="mt-4 rounded-2xl bg-neutral-900/80 p-3 ring-1 ring-black/5">
@@ -809,7 +996,7 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
           </div>
           <button
             onClick={() => router.push(`/sensor-setup?apiaryId=${encodeURIComponent(apiaryId)}`)}
-            className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-black hover:bg-white"
+            className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-black hover:bg:white"
           >
             {tv(t, 'apiary.sensorSetup.cta', 'Configure')}
           </button>
@@ -826,115 +1013,167 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
             <KpiCard key={k.key} k={k} />
           ))}
 
-          {/* Advanced KPIs */}
-          <div className="mt-2 rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
-            <p className="text-sm font-semibold mb-3">
-              {tv(t, 'hive.advanced.title', 'Advanced KPIs')}
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-neutral-800 p-3">
-                <p className="text-xs text-neutral-400 mb-1">
-                  {tv(t, 'hive.advanced.varroa', 'Varroa Infestation')}
-                </p>
-                <RadialGauge
-                  value={adv.varroaPct}
-                  label={tv(t, 'hive.advanced.varroaHint', 'Action < 3–5%')}
-                />
-              </div>
-              <div className="rounded-xl bg-neutral-800 p-3">
-                <p className="text-xs text-neutral-400 mb-1">
-                  {tv(t, 'hive.advanced.yield', 'Est. Honey Yield')}
-                </p>
-                <div className="flex items-center gap-3">
-                  <DonutGauge value={adv.estYield} max={30} unit="kg" />
-                  <span className="text-xs text-neutral-400">
-                    {tv(t, 'hive.advanced.yieldTarget', 'Target 30kg')}
-                  </span>
-                </div>
-              </div>
-              <div className="rounded-xl bg-neutral-800 p-3">
-                <p className="text-xs text-neutral-400 mb-2">
-                  {tv(t, 'hive.advanced.weight', 'Hive Weight')}
-                </p>
-                <BulletBar
-                  value={adv.weightNow}
-                  min={15}
-                  max={32}
-                  target={adv.weightTarget}
-                  unit="kg"
-                  bands={[
-                    { upTo: 20, cls: 'bg-rose-500/30' },
-                    { upTo: 26, cls: 'bg-emerald-500/30' },
-                    { upTo: 32, cls: 'bg-amber-400/30' },
-                  ]}
-                />
-              </div>
-              <div className="rounded-xl bg-neutral-800 p-3">
-                <p className="text-xs text-neutral-400 mb-2">
-                  {tv(t, 'hive.advanced.mortality', 'Daily Mortality')}
-                </p>
-                <MiniBars data={adv.mortality7} />
-              </div>
-              <div className="rounded-xl bg-neutral-800 p-3">
-                <p className="text-xs text-neutral-400 mb-2">
-                  {tv(t, 'hive.advanced.temp', 'Nest Temperature')}
-                </p>
-                <ThermoBar value={adv.tempNow} min={25} max={45} />
-              </div>
-              <div className="rounded-xl bg-neutral-800 p-3">
-                <p className="text-xs text-neutral-400 mb-2">
-                  {tv(t, 'hive.advanced.gases', 'CO₂ / O₂ Levels')}
-                </p>
-                <DualProgress
-                  a={Math.min(100, adv.co2ppm / 20)}
-                  b={Math.min(100, (adv.o2pct / 21) * 100)}
-                  labelA="CO₂ (ppm %/100)"
-                  labelB="O₂ (%)"
-                  unitA="%"
-                  unitB="%"
-                />
-              </div>
-              <div className="col-span-2 rounded-xl bg-neutral-800 p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-neutral-400">
-                    {tv(t, 'hive.advanced.agrochem', 'Agrochemical Exposure')}
+          {/* Advanced KPIs (solo cliente por valores aleatorios + unidades) */}
+          {mounted && (
+            <div className="mt-2 rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
+              <p className="text-sm font-semibold mb-3">
+                {tv(t, 'hive.advanced.title', 'Advanced KPIs')}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-neutral-800 p-3">
+                  <p className="text-xs text-neutral-400 mb-1">
+                    {tv(t, 'hive.advanced.varroa', 'Varroa Infestation')}
                   </p>
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                      adv.pesticidePpb > 2
-                        ? 'bg-rose-500 text-white'
-                        : adv.pesticidePpb > 0.5
-                          ? 'bg-amber-400 text-black'
-                          : 'bg-emerald-500 text-white'
-                    }`}
-                  >
-                    {adv.pesticidePpb.toFixed(1)} ppb
-                  </span>
+                  <RadialGauge
+                    value={adv.varroaPct}
+                    label={tv(t, 'hive.advanced.varroaHint', 'Action < 3–5%')}
+                  />
+                </div>
+                <div className="rounded-xl bg-neutral-800 p-3">
+                  <p className="text-xs text-neutral-400 mb-1">
+                    {tv(t, 'hive.advanced.yield', 'Est. Honey Yield')}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <DonutGauge
+                      value={displayYield.value}
+                      max={displayYieldMax.value}
+                      unit={displayYield.unit}
+                    />
+                    <span className="text-xs text-neutral-400">
+                      {tv(
+                        t,
+                        'hive.advanced.yieldTarget',
+                        `Target ${displayYieldMax.value.toFixed(0)}${displayYield.unit}`
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <div className="rounded-xl bg-neutral-800 p-3">
+                  <p className="text-xs text-neutral-400 mb-2">
+                    {tv(t, 'hive.advanced.weight', 'Hive Weight')}
+                  </p>
+                  <BulletBar
+                    value={displayWeightNow.value}
+                    min={displayWeightMin.value}
+                    max={displayWeightMax.value}
+                    target={displayWeightTarget.value}
+                    unit={displayWeightNow.unit}
+                    bands={[
+                      {
+                        upTo:
+                          displayWeightMin.value +
+                          (displayWeightMax.value - displayWeightMin.value) * 0.33,
+                        cls: 'bg-rose-500/30',
+                      },
+                      {
+                        upTo:
+                          displayWeightMin.value +
+                          (displayWeightMax.value - displayWeightMin.value) * 0.66,
+                        cls: 'bg-emerald-500/30',
+                      },
+                      { upTo: displayWeightMax.value, cls: 'bg-amber-400/30' },
+                    ]}
+                  />
+                </div>
+                <div className="rounded-xl bg-neutral-800 p-3">
+                  <p className="text-xs text-neutral-400 mb-2">
+                    {tv(t, 'hive.advanced.mortality', 'Daily Mortality')}
+                  </p>
+                  <MiniBars data={adv.mortality7} />
+                </div>
+                <div className="rounded-xl bg-neutral-800 p-3">
+                  <p className="text-xs text-neutral-400 mb-2">
+                    {tv(t, 'hive.advanced.temp', 'Nest Temperature')}
+                  </p>
+                  <ThermoBar
+                    value={displayTempNow.value}
+                    min={displayTempMin.value}
+                    max={displayTempMax.value}
+                    unit={displayTempNow.unit}
+                  />
+                </div>
+                <div className="rounded-xl bg-neutral-800 p-3">
+                  <p className="text-xs text-neutral-400 mb-2">
+                    {tv(t, 'hive.advanced.gases', 'CO₂ / O₂ Levels')}
+                  </p>
+                  <DualProgress
+                    a={Math.min(100, adv.co2ppm / 20)}
+                    b={Math.min(100, (adv.o2pct / 21) * 100)}
+                    labelA="CO₂ (ppm %/100)"
+                    labelB="O₂ (%)"
+                    unitA="%"
+                    unitB="%"
+                  />
+                </div>
+                <div className="col-span-2 rounded-xl bg-neutral-800 p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-neutral-400">
+                      {tv(t, 'hive.advanced.agrochem', 'Agrochemical Exposure')}
+                    </p>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        adv.pesticidePpb > 2
+                          ? 'bg-rose-500 text-white'
+                          : adv.pesticidePpb > 0.5
+                            ? 'bg-amber-400 text-black'
+                            : 'bg-emerald-500 text-white'
+                      }`}
+                    >
+                      {adv.pesticidePpb.toFixed(1)} ppb
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* HISTORY */}
-      {tab === 'history' && (
+      {/* HISTORY (solo cliente por datos mock aleatorios) */}
+      {tab === 'history' && mounted && (
         <div className="mt-4 grid grid-cols-1 gap-3">
           <HistoryRow
             title={tv(t, 'apiary.history.varroa', 'Varroa (%)')}
             unit="%"
             data={hist.varroa}
           />
-          <HistoryRow
-            title={tv(t, 'apiary.history.weight', 'Hive Weight (kg)')}
-            unit="kg"
-            data={hist.weight}
-          />
-          <HistoryRow
-            title={tv(t, 'apiary.history.temp', 'Nest Temp (°C)')}
-            unit="°C"
-            data={hist.temp}
-          />
+
+          {/* Peso: kg / lb */}
+          {(() => {
+            const weightData: Point[] = hist.weight.map((p) => ({
+              ...p,
+              v: toDisplayWeightKg(p.v, units).value,
+            }));
+            const weightUnit = toDisplayWeightKg(1, units).unit;
+            const titleFallback = weightUnit === 'kg' ? 'Hive Weight (kg)' : 'Hive Weight (lb)';
+
+            return (
+              <HistoryRow
+                title={tv(t, 'apiary.history.weight', titleFallback)}
+                unit={weightUnit}
+                data={weightData}
+              />
+            );
+          })()}
+
+          {/* Temperatura nido: °C / °F */}
+          {(() => {
+            const tempData: Point[] = hist.temp.map((p) => ({
+              ...p,
+              v: toDisplayTemp(p.v, units).value,
+            }));
+            const tempUnit = toDisplayTemp(0, units).unit;
+            const titleFallback = tempUnit === '°C' ? 'Nest Temp (°C)' : 'Nest Temp (°F)';
+
+            return (
+              <HistoryRow
+                title={tv(t, 'apiary.history.temp', titleFallback)}
+                unit={tempUnit}
+                data={tempData}
+              />
+            );
+          })()}
+
           <HistoryRow
             title={tv(t, 'apiary.history.humidity', 'Humidity (%)')}
             unit="%"
@@ -973,8 +1212,9 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
             <button
               className="mt-3 h-11 w-full rounded-2xl bg-amber-400 font-semibold text-black hover:bg-amber-300"
               onClick={() => {
-                if (typeof window !== 'undefined')
+                if (typeof window !== 'undefined') {
                   location.href = '/apiaries/quick-analysis/analysis/recommendations';
+                }
               }}
             >
               {tv(t, 'hive.advanced.openRecs', 'Open Recommendations')}

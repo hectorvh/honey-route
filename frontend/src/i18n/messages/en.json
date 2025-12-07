@@ -87,6 +87,16 @@
     "details": {
       "title": "Apiary Details"
     },
+    "ownerLabel": "Owner",
+    "elevationUnit": "m",
+    "env": {
+      "temp": "TEMP",
+      "humidity": "HUMIDITY",
+      "co2": "CO₂",
+      "no2": "NO₂",
+      "pm25": "PM2.5",
+      "pm10": "PM10"
+    },
     "lat": "Lat",
     "lng": "Lng",
     "useMyLocation": "Use my location",

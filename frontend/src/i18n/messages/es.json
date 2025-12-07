@@ -95,6 +95,16 @@
     "details": {
       "title": "Detalle del apiario"
     },
+    "ownerLabel": "Propietario",
+    "elevationUnit": "m",
+    "env": {
+      "temp": "TEMP",
+      "humidity": "HUMEDAD",
+      "co2": "CO₂",
+      "no2": "NO₂",
+      "pm25": "PM2.5",
+      "pm10": "PM10"
+    },
     "photoLabel": "Foto del apiario (opcional)",
     "photoUploadCta": "Subir foto",
     "photoChangeCta": "Cambiar foto",

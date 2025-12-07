@@ -1,4 +1,5 @@
 // frontend/src/app/(app)/apiaries/[apiaryId]/page.tsx
+
 import ApiaryDetailClient from './ApiaryDetailClient';
 
 export default async function ApiaryDetailPage({

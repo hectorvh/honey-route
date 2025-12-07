@@ -1,4 +1,3 @@
-// frontend/src/app/(app)/settings/units/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -9,38 +8,7 @@ import NavTab from '@/components/NavTab';
 import BackBtn from '@/components/BackBtn';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/i18n/I18nProvider';
-
-type TemperatureUnit = 'c' | 'f';
-type DistanceUnit = 'km' | 'mi';
-type WeightUnit = 'kg' | 'lb';
-
-type Units = {
-  temperature: TemperatureUnit;
-  distance: DistanceUnit;
-  weight: WeightUnit;
-};
-
-const DEFAULT_UNITS: Units = {
-  temperature: 'c',
-  distance: 'km',
-  weight: 'kg',
-};
-
-function loadUnits(): Units {
-  if (typeof window === 'undefined') return DEFAULT_UNITS;
-  try {
-    const raw = localStorage.getItem('hr.units');
-    if (!raw) return DEFAULT_UNITS;
-    const parsed = JSON.parse(raw) as Partial<Units>;
-    return {
-      temperature: parsed.temperature ?? 'c',
-      distance: parsed.distance ?? 'km',
-      weight: parsed.weight ?? 'kg',
-    };
-  } catch {
-    return DEFAULT_UNITS;
-  }
-}
+import { DEFAULT_UNITS, loadUnits, type Units } from './units';
 
 // helper i18n con fallback
 const tv = (t: (k: string) => string, key: string, fallback: string) =>

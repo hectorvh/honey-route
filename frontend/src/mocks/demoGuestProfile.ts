@@ -5,22 +5,40 @@ export type Severity = 'high' | 'medium' | 'low';
 
 export type DemoApiary = {
   id: string;
-  name: string;
   owner: 'azul' | 'hector';
+
+  // Campos localizados que usará el resto de la app
+  name: string;
   location: string;
+  notes?: string;
+
   lat: number;
   lng: number;
   elevation?: number;
   mgmt?: 'integrated' | 'conventional' | 'organic';
-  notes?: string;
   status?: 'healthy' | 'attention' | 'critical';
   imageUrl?: string;
+
+  // Fuentes bilingües
+  name_en: string;
+  name_es: string;
+  location_en: string;
+  location_es: string;
+  notes_en?: string;
+  notes_es?: string;
 };
 
 export type DemoHive = {
   id: string;
   apiaryId: string;
+
+  // Label localizado
   label: string;
+
+  // Fuentes bilingües
+  label_en: string;
+  label_es: string;
+
   kind: 'langstroth' | 'topbar' | 'warre';
   lat: number;
   lng: number;
@@ -56,32 +74,53 @@ export type DemoProfile = {
 const NOW = Date.now();
 const minutesAgo = (min: number) => new Date(NOW - min * 60_000).toISOString();
 
+/* ------------ idioma runtime ------------ */
+
+function currentLang(): 'en' | 'es' {
+  if (typeof window === 'undefined') return 'en';
+  try {
+    const stored = localStorage.getItem('hr.locale');
+    if (stored === 'es' || stored === 'en') return stored;
+    const nav = (navigator.language || 'en').toLowerCase();
+    if (nav.startsWith('es')) return 'es';
+    return 'en';
+  } catch {
+    return 'en';
+  }
+}
+
 /* ------------ APIARIOS ------------ */
 
-const APIARIES: DemoApiary[] = [
+const APIARIES_BASE: Omit<DemoApiary, 'name' | 'location' | 'notes'>[] = [
   {
     id: 'apiary-azul',
-    name: "Azul's Rooftop Apiary",
     owner: 'azul',
-    location: 'CDMX · Rooftop test',
+    name_en: "Azul's Rooftop Apiary",
+    name_es: 'Apiario en azotea de Azul',
+    location_en: 'CDMX · Rooftop test',
+    location_es: 'CDMX · Prueba en azotea',
     lat: 19.4326,
     lng: -99.1332,
     elevation: 2240,
     mgmt: 'integrated',
-    notes: 'Urban rooftop test apiary with mixed flora and strong sun exposure.',
+    notes_en: 'Urban rooftop test apiary with mixed flora and strong sun exposure.',
+    notes_es: 'Apiario urbano de prueba en azotea, con flora mixta y fuerte exposición al sol.',
     status: 'attention',
-    imageUrl: '/images/apiary-azul2.jpg', // si no tienes la imagen no pasa nada, puede ser undefined
+    imageUrl: '/images/apiary-azul2.jpg',
   },
   {
     id: 'apiary-hector',
-    name: "Héctor's Hillside Apiary",
     owner: 'hector',
-    location: 'Hillside near Pachuca',
+    name_en: "Héctor's Hillside Apiary",
+    name_es: 'Apiario en ladera de Héctor',
+    location_en: 'Hillside near Pachuca',
+    location_es: 'Ladera cerca de Pachuca',
     lat: 20.116,
     lng: -98.733,
     elevation: 2400,
     mgmt: 'organic',
-    notes: 'Hillside apiary with strong winds and cooler nights.',
+    notes_en: 'Hillside apiary with strong winds and cooler nights.',
+    notes_es: 'Apiario en ladera con vientos fuertes y noches más frías.',
     status: 'healthy',
     imageUrl: '/images/apiary-hector.jpg',
   },
@@ -89,12 +128,13 @@ const APIARIES: DemoApiary[] = [
 
 /* ------------ HIVES ------------ */
 
-const HIVES: DemoHive[] = [
+const HIVES_BASE: Omit<DemoHive, 'label'>[] = [
   // Azul
   {
     id: 'hive-azul-a01',
     apiaryId: 'apiary-azul',
-    label: 'Hive A-01 · Rooftop',
+    label_en: 'Hive A-01 · Rooftop',
+    label_es: 'Colmena A-01 · Azotea',
     kind: 'langstroth',
     lat: 19.4329,
     lng: -99.1334,
@@ -104,7 +144,8 @@ const HIVES: DemoHive[] = [
   {
     id: 'hive-azul-a02',
     apiaryId: 'apiary-azul',
-    label: 'Hive A-02 · Shaded',
+    label_en: 'Hive A-02 · Shaded',
+    label_es: 'Colmena A-02 · Sombreada',
     kind: 'langstroth',
     lat: 19.4323,
     lng: -99.1331,
@@ -114,7 +155,8 @@ const HIVES: DemoHive[] = [
   {
     id: 'hive-azul-a03',
     apiaryId: 'apiary-azul',
-    label: 'Hive A-03 · Experimental',
+    label_en: 'Hive A-03 · Experimental',
+    label_es: 'Colmena A-03 · Experimental',
     kind: 'topbar',
     lat: 19.433,
     lng: -99.1337,
@@ -125,7 +167,8 @@ const HIVES: DemoHive[] = [
   {
     id: 'hive-hector-h01',
     apiaryId: 'apiary-hector',
-    label: 'Hive H-01 · Hillside',
+    label_en: 'Hive H-01 · Hillside',
+    label_es: 'Colmena H-01 · Ladera',
     kind: 'langstroth',
     lat: 20.1163,
     lng: -98.7332,
@@ -135,7 +178,8 @@ const HIVES: DemoHive[] = [
   {
     id: 'hive-hector-h02',
     apiaryId: 'apiary-hector',
-    label: 'Hive H-02 · Windy',
+    label_en: 'Hive H-02 · Windy',
+    label_es: 'Colmena H-02 · Ventosa',
     kind: 'warre',
     lat: 20.117,
     lng: -98.734,
@@ -243,33 +287,70 @@ const ALERTS: AlertItem[] = [
   },
 ];
 
-const DEMO_PROFILE: DemoProfile = {
-  apiaries: APIARIES,
-  hives: HIVES,
-  alerts: ALERTS,
-};
+function buildDemoProfile(lang: 'en' | 'es'): DemoProfile {
+  const apiaries: DemoApiary[] = APIARIES_BASE.map((a) => {
+    const name = lang === 'es' ? a.name_es : a.name_en;
+    const location = lang === 'es' ? a.location_es : a.location_en;
+    const notes = lang === 'es' ? (a.notes_es ?? a.notes_en) : (a.notes_en ?? a.notes_es);
+
+    return {
+      ...a,
+      name,
+      location,
+      notes,
+    };
+  });
+
+  const hives: DemoHive[] = HIVES_BASE.map((h) => {
+    const label = lang === 'es' ? h.label_es : h.label_en;
+    return {
+      ...h,
+      label,
+    };
+  });
+
+  return {
+    apiaries,
+    hives,
+    alerts: ALERTS,
+  };
+}
+
+let DEMO_PROFILE: DemoProfile = buildDemoProfile('en');
+
 /* ------------ exports simples para otros mocks ------------ */
 
-export const demoApiaries = APIARIES;
-export const demoHives = HIVES;
-
-/* ------------ helpers para que cada pantalla consuma lo que necesita ------------ */
-
 export function getDemoProfile(): DemoProfile {
+  const lang = currentLang();
+  DEMO_PROFILE = buildDemoProfile(lang);
   return DEMO_PROFILE;
 }
 
 export function getDemoApiaries(): DemoApiary[] {
+  const lang = currentLang();
+  DEMO_PROFILE = buildDemoProfile(lang);
   return DEMO_PROFILE.apiaries;
 }
 
 export function getDemoHives(apiaryId?: string): DemoHive[] {
+  const lang = currentLang();
+  DEMO_PROFILE = buildDemoProfile(lang);
   if (!apiaryId) return DEMO_PROFILE.hives;
   return DEMO_PROFILE.hives.filter((h) => h.apiaryId === apiaryId);
 }
 
 export function getDemoAlerts(): AlertItem[] {
   return DEMO_PROFILE.alerts;
+}
+
+/** NUEVO: buscar un apiario demo por id */
+export function getDemoApiaryById(id: string): DemoApiary | undefined {
+  return getDemoApiaries().find((a) => a.id === id);
+}
+
+/** NUEVO: alertas sólo de ese apiario (por si luego quieres detalle con alertas) */
+export function getDemoAlertsForApiary(apiaryId: string): AlertItem[] {
+  return DEMO_PROFILE.alerts.filter((a) => a.hive.apiaryId === apiaryId);
 }
 
 /**
@@ -282,18 +363,22 @@ export function seedDemoIntoLocalStorageIfEmpty() {
 
   try {
     // active apiary por defecto = apiary-azul
-    const azulApiary = APIARIES.find((a) => a.id === 'apiary-azul');
+    const azulApiary = getDemoApiaries().find((a) => a.id === 'apiary-azul');
     if (azulApiary) {
       localStorage.setItem(
         'hr.apiary',
-        JSON.stringify({ id: azulApiary.id, name: azulApiary.name, location: azulApiary.location })
+        JSON.stringify({
+          id: azulApiary.id,
+          name: azulApiary.name,
+          location: azulApiary.location,
+        })
       );
     }
 
     localStorage.setItem(
       'hr.hives',
       JSON.stringify(
-        DEMO_PROFILE.hives.map((h) => ({
+        getDemoHives().map((h) => ({
           id: h.id,
           apiary_id: h.apiaryId,
           apiaryId: h.apiaryId,
