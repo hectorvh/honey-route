@@ -1,6 +1,11 @@
-//frontend/src/app/(app)/apiaries/quick-analysis/page.tsx
+// frontend/src/app/(app)/apiaries/quick-analysis/page.tsx
+import { Suspense } from 'react';
 import QuickAnalysisClient from './QuickAnalysisClient';
 
 export default function QuickAnalysisPage() {
-  return <QuickAnalysisClient />;
+  return (
+    <Suspense fallback={null}>
+      <QuickAnalysisClient />
+    </Suspense>
+  );
 }
