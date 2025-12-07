@@ -1,3 +1,4 @@
+// frontend/src/app/(app)/alerts/[id]/client.tsx
 'use client';
 
 import Image from 'next/image';
@@ -22,7 +23,7 @@ const ICONS: Record<AlertType, string> = {
 };
 const HONEY_ICON = '/images/honey.png';
 
-/* --- i18n helper tipado con interpolación simple --- */
+/* --- i18n helper con interpolación --- */
 type TFunc = (k: string, p?: Record<string, unknown>) => string;
 
 const fmt = (s: string, p?: Record<string, unknown>) => {
@@ -41,7 +42,7 @@ const tv = (t: TFunc, k: string, fb: string, p?: Record<string, unknown>) => {
   return fmt(chosen, p);
 };
 
-/* --- time “ago” con i18n y params --- */
+/* --- time ago --- */
 function ago(iso: string, t: TFunc) {
   const d = new Date(iso).getTime();
   const diff = Math.max(0, Date.now() - d);
@@ -74,13 +75,13 @@ function Pill({ sev }: { sev: Severity }) {
   );
 }
 
-/* --- small card section --- */
+/* --- sección genérica --- */
 function Section({ children }: { children: React.ReactNode }) {
   return <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">{children}</div>;
 }
 
-/* --- Icono con alto contraste + aro según severidad --- */
-function IconBadge({ src, sev, size = 48 }: { src: string; sev: Severity; size?: number }) {
+/* --- icono grande por severidad --- */
+function IconBadge({ src, sev, size = 56 }: { src: string; sev: Severity; size?: number }) {
   const ring =
     sev === 'high'
       ? 'ring-rose-400/70 bg-white'
@@ -104,7 +105,7 @@ function IconBadge({ src, sev, size = 48 }: { src: string; sev: Severity; size?:
   );
 }
 
-/* --- hero de alerta con gradiente por severidad y chip de tiempo --- */
+/* --- hero principal --- */
 function AlertHero({
   type,
   sev,
@@ -123,32 +124,34 @@ function AlertHero({
       : sev === 'medium'
         ? 'from-amber-400/30 via-amber-400/10 to-transparent'
         : 'from-emerald-500/25 via-emerald-500/10 to-transparent';
+
+  const typeLabel =
+    type === 'temp'
+      ? tv(t, 'alerts.type.temp', 'Temperature')
+      : type === 'humidity'
+        ? tv(t, 'alerts.type.humidity', 'Humidity')
+        : tv(t, 'alerts.type.queen', 'Queen');
+
   return (
-    <div className={`relative overflow-hidden rounded-2xl ring-1 ring-black/5`}>
+    <div className="relative overflow-hidden rounded-2xl ring-1 ring-black/5">
       <div className={`absolute inset-0 bg-gradient-to-br ${grad}`} />
       <div className="relative flex items-center gap-3 p-4">
-        <IconBadge src={ICONS[type]} sev={sev} size={56} />
+        <IconBadge src={ICONS[type]} sev={sev} />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Pill sev={sev} />
             <span className="text-neutral-400 text-xs">·</span>
             <span className="text-xs text-neutral-300">{ago(createdAt, t)}</span>
           </div>
-          <h2 className="mt-1 truncate text-lg font-semibold">{title}</h2>
-          <p className="mt-0.5 text-xs text-neutral-400">
-            {type === 'temp'
-              ? tv(t, 'alerts.type.temp', 'Temperature')
-              : type === 'humidity'
-                ? tv(t, 'alerts.type.humidity', 'Humidity')
-                : tv(t, 'alerts.type.queen', 'Queen')}
-          </p>
+          <h2 className="mt-1 line-clamp-2 text-lg font-semibold">{title}</h2>
+          <p className="mt-0.5 text-xs text-neutral-400">{typeLabel}</p>
         </div>
       </div>
     </div>
   );
 }
 
-/* --- tarjeta contextual (usa claves existentes de analysis.recs.*) --- */
+/* --- recomendaciones rápidas --- */
 function ContextCard({ type }: { type: AlertType }) {
   const { t } = useI18n();
 
@@ -173,7 +176,7 @@ function ContextCard({ type }: { type: AlertType }) {
   return (
     <div className="rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
       <div className="mb-2 flex items-center gap-2">
-        <div className="h-6 w-6 rounded-md bg-amber-400/20 grid place-items-center text-amber-300 ring-1 ring-amber-400/30">
+        <div className="grid h-6 w-6 place-items-center rounded-md bg-amber-400/20 text-amber-300 ring-1 ring-amber-400/30">
           ★
         </div>
         <p className="text-sm font-semibold">{title}</p>
@@ -201,11 +204,6 @@ function ContextCard({ type }: { type: AlertType }) {
     </div>
   );
 }
-
-/* --- helper para título localizable sin any --- */
-type Localizable = { titleKey?: string };
-const asLocalizable = (x: AlertItem): x is AlertItem & { titleKey: string } =>
-  typeof (x as Partial<Localizable>).titleKey === 'string';
 
 export default function AlertDetailClient({ id }: { id: string }) {
   const { t } = useI18n();
@@ -264,7 +262,8 @@ export default function AlertDetailClient({ id }: { id: string }) {
     }
   };
 
-  const localizedTitle = asLocalizable(item) ? tv(t, item.titleKey, item.title) : item.title;
+  // título para detalle: si hay listText, úsalo; si no, title básico
+  const titleForDetail = item.listText ?? item.title;
 
   return (
     <CardShell
@@ -289,35 +288,68 @@ export default function AlertDetailClient({ id }: { id: string }) {
       )}
 
       {/* HERO */}
-      <AlertHero
-        type={item.type}
-        sev={item.severity}
-        title={localizedTitle}
-        createdAt={item.createdAt}
-      />
+      <div className="mt-3">
+        <AlertHero
+          type={item.type}
+          sev={item.severity}
+          title={titleForDetail}
+          createdAt={item.createdAt}
+        />
+      </div>
 
-      {/* LINKED HIVE */}
-      <Section>
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Image src={HONEY_ICON} alt="" width={32} height={32} />
-            <div className="min-w-0">
-              <p className="truncate font-medium">{item.hive.name}</p>
-              <p className="text-xs text-neutral-400">ID: {item.hive.id}</p>
+      {/* HIVE LINKED */}
+      <div className="mt-4">
+        <Section>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Image src={HONEY_ICON} alt="" width={32} height={32} />
+              <div className="min-w-0">
+                <p className="truncate font-medium">{item.hive.name}</p>
+                <p className="text-xs text-neutral-400">ID: {item.hive.id}</p>
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={goToHive}
+              className="h-9 rounded-xl bg-amber-400 px-3 text-sm font-semibold text-black ring-1 ring-black/5 hover:bg-amber-300"
+            >
+              {tv(t, 'alerts.detail.goHive', 'Go to Hive')}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={goToHive}
-            className="h-9 rounded-xl bg-amber-400 px-3 text-sm font-semibold text-black ring-1 ring-black/5 hover:bg-amber-300"
-          >
-            {tv(t, 'alerts.detail.goHive', 'Go to Hive')}
-          </button>
-        </div>
-      </Section>
+        </Section>
+      </div>
 
-      {/* CONTEXTO / RECOMENDACIONES */}
-      <ContextCard type={item.type} />
+      {/* CAUSE / DETAILS (análisis profundo del mock) */}
+      {(item.cause || item.details) && (
+        <div className="mt-3">
+          <Section>
+            <p className="text-sm font-semibold">
+              {tv(t, 'alerts.detail.why', 'Why this alert was triggered')}
+            </p>
+            {item.cause && (
+              <p className="mt-2 text-sm text-neutral-200">
+                <span className="font-semibold">
+                  {tv(t, 'alerts.detail.cause', 'Cause')}:&nbsp;
+                </span>
+                {item.cause}
+              </p>
+            )}
+            {item.details && (
+              <p className="mt-2 text-sm text-neutral-300">
+                <span className="font-semibold">
+                  {tv(t, 'alerts.detail.details', 'Details')}:&nbsp;
+                </span>
+                {item.details}
+              </p>
+            )}
+          </Section>
+        </div>
+      )}
+
+      {/* RECOMENDACIONES */}
+      <div className="mt-3">
+        <ContextCard type={item.type} />
+      </div>
 
       {/* RESOLVE */}
       <button

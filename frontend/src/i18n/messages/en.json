@@ -17,6 +17,60 @@
     "guest": "Continue as guest",
     "locale": "EN"
   },
+  "home": {
+    "title": "My Apiaries",
+    "capture": "Capture / Analyze",
+    "addHive": "Add Hive",
+    "newApiary": "New Apiary",
+    "empty": "No apiaries yet. Create your first one!",
+    "hivesCount": "{{count}} hives",
+    "quickAnalysis": "Quick Analysis",
+    "tutorial": "Tutorial",
+    "status": {
+      "healthy": "Healthy",
+      "warning": "Warning",
+      "attention": "Needs Attention",
+      "critical": "Critical"
+    },
+    "nav": {
+      "home": "Home",
+      "alerts": "Alerts",
+      "map": "Map",
+      "analytics": "Analytics",
+      "settings": "Settings"
+    }
+  },
+  "quickAnalysis": {
+    "title": "Quick Analysis",
+    "subtitle": "Choose an apiary and hive, add photos, then run a full AI analysis.",
+
+    "noApiary": "You need at least one apiary to run Quick Analysis.",
+
+    "apiaryLabel": "Apiary",
+    "apiaryPlaceholder": "Select an apiary",
+    "apiaryLocked": "Apiary selected from details page (you can change it from Home).",
+
+    "hiveLabel": "Hive",
+    "hivePlaceholder": "Select a hive",
+    "noHives": "No hives found for this apiary yet. Try creating one from the apiary page.",
+
+    "mediaTitle": "Photo input",
+    "mediaEmpty": "No media yet. Capture or upload at least one image before running analysis.",
+    "mediaOneImage": "1 image selected",
+    "mediaManyImages": "{{count}} images selected",
+    "mediaVideoAttached": "1 video attached (optional)",
+    "mediaHint": "Capture or upload up to 5 images; they will be used in the deep analysis.",
+
+    "error": {
+      "noApiary": "Please select an apiary.",
+      "noHive": "Please select a hive to run the analysis.",
+      "noMedia": "Please add at least one photo before running the analysis."
+    },
+
+    "takePhoto": "Take photo",
+    "upload": "Upload",
+    "run": "Run Full Analysis"
+  },
   "apiary": {
     "newTitle": "New Apiary",
     "newSubtitle": "Create your first apiary to get started.",
@@ -30,7 +84,9 @@
     "hiveTypeLabel": "Hive Type",
     "hiveTypePh": "Select Hive Type",
     "createCta": "Create Apiary",
-    "details": { "title": "Apiary Details" },
+    "details": {
+      "title": "Apiary Details"
+    },
     "lat": "Lat",
     "lng": "Lng",
     "useMyLocation": "Use my location",
@@ -39,6 +95,33 @@
     "mgmtLabel": "Management",
     "notesLabel": "Notes (optional)",
     "notesPh": "Local flora, access, irrigation, etc.",
+    "photoLabel": "Apiary photo (optional)",
+    "photoUploadCta": "Upload photo",
+    "photoChangeCta": "Change photo",
+    "photoSelected": "Photo selected and stored locally.",
+    "title": "Quick analysis",
+    "subtitle": "Choose an apiary and hive, add photos, then run a full AI analysis.",
+    "noApiary": "You need at least one apiary to run Quick Analysis.",
+    "apiaryLabel": "Apiary",
+    "apiaryPlaceholder": "Select an apiary",
+    "apiaryLocked": "Apiary selected from details page (you can change it from Home).",
+    "hiveLabel": "Hive",
+    "hivePlaceholder": "Select a hive",
+    "noHives": "No hives found for this apiary yet. Try creating one from the apiary page.",
+    "mediaTitle": "Photo input",
+    "mediaEmpty": "No media yet. Capture or upload at least one image before running analysis.",
+    "mediaOneImage": "1 image selected",
+    "mediaManyImages": "{{count}} images selected",
+    "mediaVideoAttached": "1 video attached (optional)",
+    "mediaHint": "Capture or upload up to 5 images; they will be used in the deep analysis.",
+    "error": {
+      "noApiary": "Please select an apiary.",
+      "noHive": "Please select a hive to run the analysis.",
+      "noMedia": "Please add at least one photo before running the analysis."
+    },
+    "takePhoto": "Take photo",
+    "upload": "Upload",
+    "run": "Run full analysis",
     "tabs": {
       "status": "Status",
       "history": "History",
@@ -80,7 +163,21 @@
       "integrated": "Integrated",
       "conventional": "Conventional",
       "organic": "Organic"
-    }
+    },
+    "hivesEmpty": "No hives yet in this apiary.",
+    "hivesTitle": "Hives",
+    "dashboardTitle": "Environment",
+
+    "sensorSetup": {
+      "title": "Sensor Setup",
+      "desc": "Configure which sensors are active and their thresholds.",
+      "cta": "Configure"
+    },
+
+    "lastUpdate": "Last update",
+    "edit": "Edit",
+    "active": "Active",
+    "paused": "Paused"
   },
   "hive": {
     "newTitle": "New Hive",
@@ -134,77 +231,6 @@
       "evidenceHint": "Slide to compare “Before” vs “After”."
     }
   },
-  "common": {
-    "back": "Back",
-    "poweredBy": "Powered by",
-    "other": "Other",
-    "genericError": "Something went wrong."
-  },
-  "auth": {
-    "notAuthenticated": "You need to sign in.",
-    "forbidden": "You don’t have access."
-  },
-  "settings": {
-    "title": "Settings",
-    "sections": {
-      "account": "Account",
-      "preferences": "Preferences",
-      "theme": "Theme",
-      "support": "Support & Legal"
-    },
-    "profile": "Profile",
-    "profileHint": "Manage your profile",
-    "units": "Units",
-    "unitsHint": "Choose your preferred units",
-    "offline": "Offline Sync",
-    "offlineHint": "Sync data for offline use",
-    "privacy": "Privacy",
-    "privacyHint": "Manage your privacy settings",
-    "language": "Language",
-    "languageHint": "Interface language",
-    "dark": "Dark Mode",
-    "darkHint": "Switch to dark theme",
-    "en": "EN",
-    "es": "ES",
-    "signOut": "Sign out"
-  },
-  "home": {
-    "title": "My Apiaries",
-    "capture": "Capture / Analyze",
-    "addHive": "Add Hive",
-    "newApiary": "New Apiary",
-    "empty": "No apiaries yet. Create your first one!",
-    "hivesCount": "{{count}} hives",
-    "status": {
-      "healthy": "Healthy",
-      "attention": "Needs Attention",
-      "critical": "Critical"
-    },
-    "nav": {
-      "home": "Home",
-      "alerts": "Alerts",
-      "map": "Map",
-      "settings": "Settings"
-    }
-  },
-  "map": {
-    "title": "Map",
-    "searchPh": "Search hives or locations",
-    "search": "Search",
-    "hives": "Hives",
-    "comingSoon": "Floral maps & risk zones coming in next versions",
-    "locate": "Locate me",
-    "noGeo": "Geolocation not available",
-    "geoDenied": "Permission denied",
-    "empty": "No hives to show",
-    "zoomHere": "Zoom here",
-    "youAreHere": "You are here",
-    "highlight": "Highlighted",
-    "a11y": {
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out"
-    }
-  },
   "camera": {
     "title": "Camera",
     "flip": "Flip",
@@ -239,21 +265,51 @@
     "loading": {
       "title": "Analysis",
       "main": "Analyzing your images...",
-      "hint": "Please wait while we compute risk and detections.",
-      "noPayload": "No images to analyze."
+      "hint": "Please wait while we compute risk, detections and health indicators.",
+      "noPayload": "No images to analyze.",
+      "invalidPayload": "Could not read analysis data. Please try again from Quick Analysis.",
+      "noMedia": "No media found in analysis payload. Please add at least one photo.",
+      "errorTitle": "Nothing to analyze",
+      "summary": "Media: {{count}} image(s)",
+      "backToQuick": "Go to Quick Analysis"
     },
     "result": {
       "title": "Analysis Result",
+      "loading": "Loading result from session…",
+      "status.queued": "Queued",
+      "status.running": "Running",
+      "status.done": "Done",
+      "status.error": "Error",
+      "noResult": "No analysis result found. Please start from Quick Analysis.",
+      "invalid": "Could not read analysis result. Please run the analysis again.",
+      "errorTitle": "No result available",
+
       "riskTitle": "Risk Level",
-      "risk": { "low": "Low", "medium": "Medium", "high": "High" },
-      "detections": "Detections",
-      "sev": { "low": "Low", "medium": "Medium", "high": "High" },
-      "none": "No issues detected.",
-      "imagesReviewed": "{{count}} images reviewed",
-      "timeTaken": "Processed in {{sec}}s",
-      "riskShort": "RISK",
-      "seeRecs": "See recommendations",
-      "logAction": "Log action"
+      "risk": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "riskLowBody": "Overall risk is low; continue routine inspections and monitoring.",
+      "riskMedBody": "Some indicators need attention; schedule a focused inspection soon.",
+      "riskHighBody": "High risk detected; prioritize this hive and review critical conditions.",
+
+      "summary": "Media analyzed: {{count}} image(s)",
+      "riskChip": "Overall hive risk",
+      "sourceChip": "Source",
+
+      "jobTitle": "Job Information",
+      "jobId": "Job ID",
+      "status": "Status",
+      "hiveLabel": "Hive",
+      "apiaryLabel": "Apiary",
+
+      "detectionsTitle": "Detections",
+      "noDetections": "No major issues detected in this analysis (demo-only placeholder).",
+
+      "again": "Run again",
+      "logAction": "View history",
+      "goMap": "View hive on map"
     },
     "recs": {
       "title": "Recommendations",
@@ -301,6 +357,247 @@
       "pest": "OA vaporization."
     }
   },
+  "alerts": {
+    "title": "Alerts",
+    "filter": {
+      "sev": "Severity",
+      "type": "Type",
+      "all": "All"
+    },
+    "type": {
+      "temp": "Temperature",
+      "humidity": "Humidity",
+      "queen": "Queen"
+    },
+    "sort": {
+      "label": "Sort by",
+      "recent": "Most recent",
+      "severity": "Severity"
+    },
+    "empty": "No matching alerts",
+    "sev": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "time": {
+      "now": "now",
+      "m": "{{count}}m",
+      "h": "{{count}}h",
+      "d": "{{count}}d"
+    },
+    "detail": {
+      "title": "Alert Details",
+      "notFound": "Alert not found",
+      "cause": "Cause",
+      "linkedHive": "Linked Hive",
+      "goHive": "Go to Hive",
+      "resolve": "Mark as Resolved",
+      "resolvedToast": "Marked as resolved"
+    },
+    "items": {
+      "a1": {
+        "title": "High temperature detected",
+        "list": "High Temperature"
+      },
+      "a2": {
+        "title": "Humidity out of optimal range",
+        "list": "Humidity Alert"
+      },
+      "a3": {
+        "title": "Queen status requires attention",
+        "list": "Queen Status"
+      },
+      "a4": {
+        "title": "Low temperature detected",
+        "list": "Low Temperature"
+      }
+    }
+  },
+  "map": {
+    "title": "Map",
+    "searchPh": "Search hives or locations",
+    "search": "Search",
+
+    "filter": {
+      "apiary": "Apiary",
+      "allApiaries": "All apiaries",
+      "hive": "Focus hive (optional)",
+      "hivePlaceholder": "Select a hive to focus"
+    },
+
+    "noGeo": "Geolocation not available.",
+    "geoDenied": "Permission denied",
+
+    "alertWhy": "Why this alert was triggered",
+    "alertRiskLabel": "Risk level",
+    "alertRisk": {
+      "none": "None"
+    },
+
+    "alert": {
+      "defaultCause": "Condition outside the recommended range.",
+      "defaultDetails": "Check hive conditions and recent activity.",
+      "cause": "Cause",
+      "details": "Details"
+    },
+
+    "zoomHere": "Zoom here",
+
+    "a11y": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out"
+    },
+
+    "locate": "Locate me",
+
+    "groups": {
+      "title": "Apiaries on map",
+      "empty": "No hives to display yet.",
+      "hiveLabel": {
+        "one": "hive",
+        "many": "hives"
+      }
+    },
+
+    "tag": {
+      "local": "· local"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Overview of your apiaries, hives and alerts (demo data).",
+    "kpi": {
+      "apiaries": "Apiaries",
+      "apiariesHint": "Approx. counted from hives grouped by apiary.",
+      "hives": "Hives",
+      "hivesHint": "Total hives stored locally on this device.",
+      "alerts": "Alerts (demo)",
+      "alertsHint": "Based on mock alerts currently loaded in the app."
+    },
+    "topHives": {
+      "title": "Top hives by alerts",
+      "empty": "No alerts yet. Once alerts are generated, you’ll see the most affected hives here.",
+      "alert": "alert",
+      "alerts": "alerts"
+    },
+    "cta": {
+      "alerts": "Open Alerts"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "account": "Account",
+      "preferences": "Preferences",
+      "theme": "Theme",
+      "support": "Support & Legal"
+    },
+    "profilePage": {
+      "title": "Profile",
+      "subtitle": "Update your basic information. This is stored locally for the demo.",
+      "name": "Name",
+      "namePh": "e.g. Ana Martínez",
+      "email": "Email",
+      "emailPh": "you@example.com",
+      "org": "Organization",
+      "orgPh": "Cooperative / Farm / Apiary",
+      "role": "Role",
+      "rolePh": "Beekeeper, technician, etc.",
+      "saved": "Saved locally.",
+      "saveCta": "Save profile",
+      "localNote": "For this demo, profile data is stored only in your browser."
+    },
+    "unitsPage": {
+      "title": "Units & formats",
+      "subtitle": "Choose how you prefer to see temperatures, distances and weights.",
+      "temperature": "Temperature",
+      "temperatureHint": "Used for brood, hive and weather temperature.",
+      "distance": "Distance",
+      "distanceHint": "For maps, forage radius and travel distance.",
+      "weight": "Weight",
+      "weightHint": "For hive weight, harvest and feed measurements.",
+      "saved": "Preferences saved.",
+      "saveCta": "Save units",
+      "resetCta": "Reset",
+      "localNote": "These preferences are stored in your browser and can be changed at any time."
+    },
+    "profile": "Profile",
+    "profileHint": "Manage your profile",
+    "units": "Units",
+    "unitsHint": "Choose your preferred units",
+    "offline": "Offline Sync",
+    "offlineHint": "Sync data for offline use",
+    "privacy": "Privacy",
+    "privacyHint": "Manage your privacy settings",
+    "language": "Language",
+    "languageHint": "Interface language",
+    "dark": "Dark Mode",
+    "darkHint": "Switch to dark theme",
+    "en": "EN",
+    "es": "ES",
+    "signOut": "Sign out",
+    "subscriptions": "Subscriptions",
+    "subscriptionsHint": "Pick or change your plan",
+    "subs": {
+      "title": "Subscriptions",
+      "hint": "Pick or change your plan",
+      "page": {
+        "title": "Subscriptions",
+        "subtitle": "Pick a plan. You can change anytime."
+      },
+      "price": {
+        "free": "$0",
+        "pro": "$9",
+        "team": "$29"
+      },
+      "perMonth": "/mo",
+      "plan": {
+        "hobby": {
+          "name": "Hobby",
+          "tag": "For personal use and learning"
+        },
+        "pro": {
+          "name": "Pro",
+          "tag": "Best for active beekeepers"
+        },
+        "team": {
+          "name": "Team",
+          "tag": "For teams and cooperatives"
+        }
+      },
+      "features": {
+        "images": "Images",
+        "storage": "Storage",
+        "alerts": "Alerts",
+        "offline": "Offline Mode",
+        "mapLayers": "Map Layers",
+        "multiUser": "Team members",
+        "images.val": {
+          "hobby": "50/mo",
+          "pro": "500/mo",
+          "team": "5k/mo"
+        },
+        "storage.val": {
+          "hobby": "1 GB",
+          "pro": "10 GB",
+          "team": "100 GB"
+        },
+        "alerts.val": {
+          "hobby": "Basic",
+          "pro": "Smart",
+          "team": "Advanced"
+        },
+        "offline.val": "Yes",
+        "mapLayers.val": "Floral & risk",
+        "multiUser.val": "Up to 10"
+      },
+      "recommended": "Recommended",
+      "current": "Current plan",
+      "select": "Choose plan",
+      "disclaimer": "Prices shown are demo only. Billing coming soon."
+    }
+  },
   "help": {
     "title": "Help & FAQ",
     "subtitle": "Common questions and quick answers.",
@@ -336,7 +633,10 @@
       "h": "4. Privacy",
       "p": "We collect and process data as described in our Privacy Policy."
     },
-    "s5": { "h": "5. Changes", "p": "We may update these terms; continued use means acceptance." }
+    "s5": {
+      "h": "5. Changes",
+      "p": "We may update these terms; continued use means acceptance."
+    }
   },
   "notifications": {
     "menu": "Notifications",
@@ -345,37 +645,38 @@
     "subtitle": "Stay informed about your apiary.",
     "inapp": "In-App Notifications",
     "push": "Push Notifications",
-    "critical": { "t": "Critical Alerts", "d": "Health or risk events that need attention." },
-    "routine": { "t": "Routine Reminders", "d": "Maintenance and periodic tasks." },
-    "updates": { "t": "App Updates", "d": "News and improvements." },
-    "urgent": { "t": "Urgent Alerts", "d": "Immediate alerts to your device." },
-    "general": { "t": "General Notifications", "d": "Regular updates and tips." },
+    "critical": {
+      "t": "Critical Alerts",
+      "d": "Health or risk events that need attention."
+    },
+    "routine": {
+      "t": "Routine Reminders",
+      "d": "Maintenance and periodic tasks."
+    },
+    "updates": {
+      "t": "App Updates",
+      "d": "News and improvements."
+    },
+    "urgent": {
+      "t": "Urgent Alerts",
+      "d": "Immediate alerts to your device."
+    },
+    "general": {
+      "t": "General Notifications",
+      "d": "Regular updates and tips."
+    },
     "enable": "Grant push permission",
     "notSupported": "Push notifications are not supported on this device/browser.",
     "denied": "Permission was not granted."
   },
-  "alerts": {
-    "title": "Alerts",
-    "filter": { "sev": "Severity", "type": "Type", "all": "All" },
-    "type": { "temp": "Temperature", "humidity": "Humidity", "queen": "Queen" },
-    "sort": { "label": "Sort by", "recent": "Most recent", "severity": "Severity" },
-    "empty": "No matching alerts",
-    "sev": { "high": "High", "medium": "Medium", "low": "Low" },
-    "time": { "now": "now", "m": "{{count}}m", "h": "{{count}}h", "d": "{{count}}d" },
-    "detail": {
-      "title": "Alert Details",
-      "notFound": "Alert not found",
-      "cause": "Cause",
-      "linkedHive": "Linked Hive",
-      "goHive": "Go to Hive",
-      "resolve": "Mark as Resolved",
-      "resolvedToast": "Marked as resolved"
-    },
-    "items": {
-      "a1": { "title": "High temperature detected", "list": "High Temperature" },
-      "a2": { "title": "Humidity out of optimal range", "list": "Humidity Alert" },
-      "a3": { "title": "Queen status requires attention", "list": "Queen Status" },
-      "a4": { "title": "Low temperature detected", "list": "Low Temperature" }
-    }
+  "common": {
+    "back": "Back",
+    "poweredBy": "Powered by",
+    "other": "Other",
+    "genericError": "Something went wrong."
+  },
+  "auth": {
+    "notAuthenticated": "You need to sign in.",
+    "forbidden": "You don’t have access."
   }
 }

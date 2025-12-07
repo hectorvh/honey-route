@@ -29,7 +29,13 @@ export default function NewApiaryPage() {
         </h1>
 
         <div className="mt-6">
-          <NewApiaryForm onDone={() => router.replace('/apiaries')} />
+          <NewApiaryForm
+            onDone={(_apiary) => {
+              // Ya se guardó hr.apiary y hr.apiaries en localStorage
+              // Paso siguiente obligatorio: crear colmena
+              router.replace('/hives/new');
+            }}
+          />
         </div>
 
         <p className="mt-8 text-center text-xs text-neutral-500">

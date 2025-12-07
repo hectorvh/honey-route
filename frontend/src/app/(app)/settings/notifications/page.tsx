@@ -1,3 +1,4 @@
+//frontend/src/app/(app)/settings/notifications/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';

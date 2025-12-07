@@ -1,3 +1,4 @@
+//frontend/src/app/(app)/apiaries/[apiaryId]/ApiaryDetailClient.tsx
 'use client';
 
 import Image from 'next/image';
@@ -23,6 +24,18 @@ type KPI = {
   hint?: string;
 };
 type Hive = { id: string; apiary_id: string; label: string; lat?: number; lng?: number };
+
+type HealthState = 'healthy' | 'attention' | 'critical';
+type OperationalState = 'active' | 'paused';
+
+type EnvMetrics = {
+  temp: number;
+  humidity: number;
+  co2: number;
+  no2: number;
+  pm25: number;
+  pm10: number;
+};
 
 const tv = (t: (k: string) => string, k: string, fb: string) => (t(k) === k ? fb : t(k));
 
@@ -420,6 +433,108 @@ function Tabs({ active, onTab }: { active: TabKey; onTab: (k: TabKey) => void })
   );
 }
 
+/* ----------- Badges + bloques v1.2 (health / hives / env / sensor setup) ----------- */
+function HealthStatusBadge({ status }: { status: HealthState }) {
+  const { t } = useI18n();
+  const map: Record<HealthState, { text: string; cls: string }> = {
+    healthy: {
+      text: tv(t, 'home.status.healthy', 'Healthy'),
+      cls: 'bg-emerald-500/90 text-white',
+    },
+    attention: {
+      text: tv(t, 'home.status.warning', 'Warning'),
+      cls: 'bg-amber-400 text-black',
+    },
+    critical: {
+      text: tv(t, 'home.status.critical', 'Critical'),
+      cls: 'bg-rose-500 text-white',
+    },
+  };
+  const v = map[status];
+  return (
+    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold shadow ${v.cls}`}>
+      {v.text}
+    </span>
+  );
+}
+
+function OperationalBadge({ state }: { state: OperationalState }) {
+  const { t } = useI18n();
+  const key = state === 'active' ? 'apiary.active' : 'apiary.paused';
+  const label = tv(t, key, state === 'active' ? 'Active' : 'Paused');
+  const cls =
+    state === 'active'
+      ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/40'
+      : 'bg-neutral-900 text-neutral-300 border border-neutral-700';
+
+  return <span className={`px-2 py-1 rounded-full text-xs font-medium ${cls}`}>{label}</span>;
+}
+
+function HiveList({ hives }: { hives: Hive[] }) {
+  const { t } = useI18n();
+  if (!hives.length) {
+    return (
+      <section className="mt-4 rounded-2xl bg-neutral-900/80 p-3 ring-1 ring-black/5">
+        <p className="text-sm text-neutral-300">
+          {tv(t, 'apiary.hivesEmpty', 'No hives yet in this apiary.')}
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mt-4 rounded-2xl bg-neutral-900/80 p-3 ring-1 ring-black/5">
+      <h2 className="text-sm font-semibold text-neutral-100">
+        {tv(t, 'apiary.hivesTitle', 'Hives')}
+      </h2>
+      <ul className="mt-2 space-y-2">
+        {hives.map((h) => (
+          <li
+            key={h.id}
+            className="flex items-center justify-between rounded-xl bg-black/20 px-3 py-2 text-sm text-neutral-100"
+          >
+            <span>{h.label}</span>
+            {/* Podríamos mapear estado por hive más adelante; por ahora usamos Healthy */}
+            <span className="rounded-full bg-emerald-500/80 px-2 py-0.5 text-[11px] font-semibold">
+              {tv(t, 'home.status.healthy', 'Healthy')}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function EnvDashboard({ metrics }: { metrics: EnvMetrics }) {
+  const { t } = useI18n();
+  const items = [
+    { key: 'temp', label: 'Temp', value: metrics.temp, unit: '°C' },
+    { key: 'humidity', label: 'Humidity', value: metrics.humidity, unit: '%' },
+    { key: 'co2', label: 'CO₂', value: metrics.co2, unit: 'ppm' },
+    { key: 'no2', label: 'NO₂', value: metrics.no2, unit: 'ppm' },
+    { key: 'pm25', label: 'PM2.5', value: metrics.pm25, unit: 'µg/m³' },
+    { key: 'pm10', label: 'PM10', value: metrics.pm10, unit: 'µg/m³' },
+  ];
+
+  return (
+    <section className="mt-4 rounded-2xl bg-neutral-900/80 p-3 ring-1 ring-black/5">
+      <h2 className="text-sm font-semibold text-neutral-100">
+        {tv(t, 'apiary.dashboardTitle', 'Environment')}
+      </h2>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        {items.map((m) => (
+          <div key={m.key} className="rounded-xl bg-black/20 px-3 py-2 text-xs text-neutral-200">
+            <p className="text-[11px] uppercase tracking-wide text-neutral-400">{m.label}</p>
+            <p className="mt-1 text-sm font-semibold">
+              {m.value != null ? `${m.value.toFixed(1)} ${m.unit}` : '—'}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ---------------- helpers (mocks) ---------------- */
 function ts(days = 14, min = 0, max = 100): Point[] {
   const out: Point[] = [];
@@ -471,7 +586,6 @@ function buildKPIs(hives: Hive[], t: (k: string) => string): KPI[] {
     disease: clamp(97),
   };
 
-  // Hints traducibles usando las claves existentes (sin .hints.*)
   const rows: Array<[string, string, number, string?]> = [
     ['status', tv(t, 'hive.kpi.status', 'Status'), vals.status, tv(t, 'hive.kpi.active', 'Active')],
     ['health', tv(t, 'hive.kpi.health', 'Health'), vals.health],
@@ -588,12 +702,36 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
     };
   }, [hives.length]);
 
+  const envMetrics: EnvMetrics = useMemo(
+    () => ({
+      temp: adv.tempNow,
+      humidity: hist.humidity[hist.humidity.length - 1]?.v ?? 0,
+      co2: adv.co2ppm,
+      no2: Math.round(adv.co2ppm / 18),
+      pm25: Math.round(10 + adv.pesticidePpb * 4),
+      pm10: Math.round(18 + adv.pesticidePpb * 5),
+    }),
+    [adv, hist]
+  );
+
+  // derivar health_state y last_update a partir de los KPIs/hist
+  let derivedHealth: HealthState = 'healthy';
+  if (kpis.some((k) => k.sev === 'crit')) derivedHealth = 'critical';
+  else if (kpis.some((k) => k.sev === 'warn')) derivedHealth = 'attention';
+
+  const health: HealthState = derivedHealth;
+  const operational: OperationalState = 'active'; // más adelante podemos leerlo de BD
+  const lastUpdateLabel =
+    hist.temp[hist.temp.length - 1]?.t ?? new Date().toISOString().slice(0, 10);
+
   // etiqueta “N hives” con i18n
   const hivesCountRaw = t('home.hivesCount');
   const hivesCountText =
     hivesCountRaw === 'home.hivesCount'
       ? `${hives.length} hives`
       : hivesCountRaw.replace('{{count}}', String(hives.length));
+
+  const goEdit = () => router.push(`/apiaries/${encodeURIComponent(apiaryId)}/edit`);
 
   return (
     <CardShell
@@ -607,10 +745,28 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
       contentClassName="pb-24 pt-2"
       footer={<NavTab active="home" />}
     >
-      <h1 className="text-[22px] font-bold">{tv(t, 'apiary.details.title', 'Apiary Details')}</h1>
-      <p className="mt-1 text-sm text-neutral-400">
-        {name} · {hivesCountText}
-      </p>
+      {/* Header v1.2 con estado del apiario */}
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-[22px] font-bold text-white">{name}</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            {tv(t, 'apiary.details.title', 'Apiary Details')} · {hivesCountText}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-neutral-400">
+            <OperationalBadge state={operational} />
+            <HealthStatusBadge status={health} />
+            <span>
+              {tv(t, 'apiary.lastUpdate', 'Last update')}: {lastUpdateLabel}
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={goEdit}
+          className="rounded-full bg-neutral-900 px-3 py-1 text-xs font-medium text-neutral-100 ring-1 ring-black/40 hover:bg-neutral-800"
+        >
+          {tv(t, 'apiary.edit', 'Edit')}
+        </button>
+      </header>
 
       {/* Acciones del apiario */}
       <div className="mt-3 grid grid-cols-2 gap-2">
@@ -621,13 +777,46 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
           + {tv(t, 'home.addHive', 'Add Hive')}
         </button>
         <button
-          onClick={() => router.push('/capture')}
+          onClick={() =>
+            router.push(`/apiaries/quick-analysis?apiaryId=${encodeURIComponent(apiaryId)}`)
+          }
           className="h-11 rounded-2xl bg-amber-400 font-semibold text-black hover:bg-amber-300"
         >
-          {tv(t, 'home.capture', 'Capture / Analyze')}
+          {tv(t, 'home.quickAnalysis', 'Quick Analysis')}
         </button>
       </div>
 
+      {/* Bloque Hives v1.2 */}
+      <HiveList hives={hives} />
+
+      {/* Bloque Dashboard ambiental v1.2 */}
+      <EnvDashboard metrics={envMetrics} />
+
+      {/* Bloque Sensor Setup v1.2 */}
+      <section className="mt-4 rounded-2xl bg-neutral-900/80 p-3 ring-1 ring-black/5">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold text-neutral-100">
+              {tv(t, 'apiary.sensorSetup.title', 'Sensor Setup')}
+            </h2>
+            <p className="mt-1 text-xs text-neutral-400">
+              {tv(
+                t,
+                'apiary.sensorSetup.desc',
+                'Configure which sensors are active and their thresholds.'
+              )}
+            </p>
+          </div>
+          <button
+            onClick={() => router.push(`/sensor-setup?apiaryId=${encodeURIComponent(apiaryId)}`)}
+            className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-black hover:bg-white"
+          >
+            {tv(t, 'apiary.sensorSetup.cta', 'Configure')}
+          </button>
+        </div>
+      </section>
+
+      {/* Tabs (Status / History / Recs / Media / Evidence) */}
       <Tabs active={tab} onTab={setTab} />
 
       {/* STATUS */}
@@ -784,7 +973,8 @@ export default function ApiaryDetailClient({ apiaryId }: { apiaryId: string }) {
             <button
               className="mt-3 h-11 w-full rounded-2xl bg-amber-400 font-semibold text-black hover:bg-amber-300"
               onClick={() => {
-                if (typeof window !== 'undefined') location.href = '/analysis/recommendations';
+                if (typeof window !== 'undefined')
+                  location.href = '/apiaries/quick-analysis/analysis/recommendations';
               }}
             >
               {tv(t, 'hive.advanced.openRecs', 'Open Recommendations')}

@@ -1,4 +1,4 @@
-//frontend/src/app/(app)/apiaries/[apiaryId]/page.tsx
+// frontend/src/app/(app)/apiaries/[apiaryId]/page.tsx
 import ApiaryDetailClient from './ApiaryDetailClient';
 
 export default async function ApiaryDetailPage({
@@ -6,6 +6,7 @@ export default async function ApiaryDetailPage({
 }: {
   params: Promise<{ apiaryId: string }>;
 }) {
-  const { apiaryId } = await params; // ✅ esperar params
+  const { apiaryId } = await params;
+
   return <ApiaryDetailClient apiaryId={apiaryId} />;
 }

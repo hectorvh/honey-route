@@ -1,41 +1,43 @@
-// Mocks para /hives.
-// Construimos el apiario "Azul's Bees" con las 4 colmenas que ya aparecen en alerts/map.
-//frontend/src/app/(app)/apiaries/mock.ts
-import { getMockAlerts } from '@/app/(app)/alerts/mock';
-
-export type ApiaryStatus = 'healthy' | 'attention' | 'critical';
+// frontend/src/app/(app)/apiaries/mock.ts
+import { getDemoApiaries, getDemoHives, type DemoApiary } from '@/mocks/demoGuestProfile';
 
 export type ApiaryCard = {
   id: string;
   name: string;
   hiveCount: number;
-  status: ApiaryStatus;
-  imageUrl?: string; // opcional: si no hay, usamos un fondo degradado
+  status: 'healthy' | 'attention' | 'critical';
+  imageUrl?: string;
 };
 
-export function getMockApiaries(): ApiaryCard[] {
-  const alerts = getMockAlerts();
+// opcional: map de imágenes por apiario demo
+const APIARY_IMAGES: Record<string, string> = {
+  'apiary-azul': '/images/apiary-azul2.png',
+  'apiary-hector': '/images/apiary-hector.png',
+};
 
-  // Dedupe de colmenas por id (salen 4)
-  const hiveIds = new Set(alerts.map((a) => a.hive.id));
-  const hiveCount = hiveIds.size;
+// status del apiario según sus colmenas
+function inferApiaryStatus(apiaryId: string): ApiaryCard['status'] {
+  const hives = getDemoHives(apiaryId);
 
-  // Severidad más alta → estado del apiario
-  const hasHigh = alerts.some((a) => a.severity === 'high');
-  const hasMedium = alerts.some((a) => a.severity === 'medium');
+  if (!hives.length) return 'healthy';
 
-  let status: ApiaryStatus = 'healthy';
-  if (hasHigh) status = 'critical';
-  else if (hasMedium) status = 'attention';
+  if (hives.some((h) => h.status === 'critical')) return 'critical';
+  if (hives.some((h) => h.status === 'attention')) return 'attention';
+  return 'healthy';
+}
 
-  return [
-    {
-      id: 'api-azul',
-      name: "Azul's Bees",
-      hiveCount,
-      status,
-      // imageUrl opcional; si no la tienes, déjala undefined para usar fallback
-      imageUrl: '/images/apiary1.png',
-    },
-  ];
+export function getMockApiaryCards(): ApiaryCard[] {
+  const apiaries: DemoApiary[] = getDemoApiaries();
+
+  return apiaries.map((a) => {
+    const hives = getDemoHives(a.id);
+
+    return {
+      id: a.id,
+      name: a.name,
+      hiveCount: hives.length,
+      status: inferApiaryStatus(a.id),
+      imageUrl: APIARY_IMAGES[a.id],
+    };
+  });
 }

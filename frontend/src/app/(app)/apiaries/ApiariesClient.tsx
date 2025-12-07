@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import BrandMark from '@/components/BrandMark';
 import LangToggle from '@/components/LangToggle';
 import Button from '@/components/ui/Button';
@@ -12,12 +14,29 @@ import type { ApiaryCard } from './mock';
 
 function StatusBadge({ status }: { status: ApiaryCard['status'] }) {
   const { t } = useI18n();
+
   const map: Record<ApiaryCard['status'], { text: string; cls: string }> = {
-    healthy: { text: t('home.status.healthy'), cls: 'bg-emerald-500/90 text-white' },
-    attention: { text: t('home.status.attention'), cls: 'bg-amber-400 text-black' },
-    critical: { text: t('home.status.critical'), cls: 'bg-rose-500 text-white' },
+    healthy: {
+      text:
+        t('home.status.healthy') === 'home.status.healthy' ? 'Healthy' : t('home.status.healthy'),
+      cls: 'bg-emerald-500/90 text-white',
+    },
+    attention: {
+      text:
+        t('home.status.warning') === 'home.status.warning' ? 'Warning' : t('home.status.warning'),
+      cls: 'bg-amber-400 text-black',
+    },
+    critical: {
+      text:
+        t('home.status.critical') === 'home.status.critical'
+          ? 'Critical'
+          : t('home.status.critical'),
+      cls: 'bg-rose-500 text-white',
+    },
   };
+
   const v = map[status];
+
   return (
     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold shadow ${v.cls}`}>
       {v.text}
@@ -41,19 +60,77 @@ function HiveCount({ count }: { count: number }) {
 
 const tv = (t: (k: string) => string, k: string, fb: string) => (t(k) === k ? fb : t(k));
 
+// Tipos de lo que guardamos en localStorage
+type StoredApiary = {
+  id: string;
+  name?: string | null;
+  imageUrl?: string | null;
+};
+
+type StoredHive = {
+  apiaryId?: string;
+};
+
 export default function ApiariesClient({ cards }: { cards: ApiaryCard[] }) {
   const { t } = useI18n();
   const router = useRouter();
 
+  const [allCards, setAllCards] = useState<ApiaryCard[]>(cards);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      setAllCards(cards);
+      return;
+    }
+
+    try {
+      const rawApiaries = localStorage.getItem('hr.apiaries');
+      const rawHives = localStorage.getItem('hr.hives');
+
+      let localApiaries: StoredApiary[] = [];
+      if (rawApiaries) {
+        const parsed = JSON.parse(rawApiaries);
+        if (Array.isArray(parsed)) localApiaries = parsed as StoredApiary[];
+      }
+
+      let hives: StoredHive[] = [];
+      if (rawHives) {
+        const parsed = JSON.parse(rawHives);
+        if (Array.isArray(parsed)) hives = parsed as StoredHive[];
+      }
+
+      const locals: ApiaryCard[] = localApiaries
+        .map((a) => {
+          if (!a || typeof a.id !== 'string') return null;
+
+          const hiveCount = Array.isArray(hives)
+            ? hives.filter((h) => h && h.apiaryId === a.id).length
+            : 0;
+
+          const card: ApiaryCard = {
+            id: a.id,
+            name: a.name ?? 'My Apiary',
+            hiveCount,
+            status: 'healthy', // default para apiarios locales
+            imageUrl: a.imageUrl ?? undefined,
+          };
+
+          return card;
+        })
+        .filter((x): x is ApiaryCard => x !== null);
+
+      const existingIds = new Set(cards.map((c) => c.id));
+      const onlyNew = locals.filter((c) => !existingIds.has(c.id));
+
+      setAllCards([...cards, ...onlyNew]);
+    } catch {
+      setAllCards(cards);
+    }
+  }, [cards]);
+
   const goCreateApiary = () => router.push('/apiaries/new');
-
-  const goCreateHive = () => {
-    const apiary = typeof window !== 'undefined' ? localStorage.getItem('hr.apiary') : null;
-    if (!apiary) return router.push('/apiaries/new');
-    router.push('/hives/new');
-  };
-
-  const goCapture = () => router.push('/capture');
+  const goQuickAnalysis = () => router.push('/apiaries/quick-analysis');
+  const goTutorial = () => router.push('/tutorial');
 
   return (
     <CardShell
@@ -68,26 +145,38 @@ export default function ApiariesClient({ cards }: { cards: ApiaryCard[] }) {
       </h1>
 
       {/* Acciones rápidas */}
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <Button className="h-12 w-full rounded-2xl" size="lg" onClick={goCreateHive}>
-          + {tv(t, 'home.addHive', 'Add Hive')}
-        </Button>
+      <div className="mt-3 space-y-2">
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            className="h-12 w-full rounded-2xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
+            size="lg"
+            onClick={goCreateApiary}
+          >
+            {tv(t, 'home.newApiary', 'New Apiary')}
+          </Button>
+
+          <Button className="h-12 w-full rounded-2xl" size="lg" onClick={goQuickAnalysis}>
+            {tv(t, 'home.quickAnalysis', 'Quick Analysis')}
+          </Button>
+        </div>
+
         <Button
-          className="h-12 w-full rounded-2xl bg-neutral-900 text-white ring-1 ring-black/5 hover:bg-neutral-800"
-          size="lg"
-          onClick={goCreateApiary}
+          className="h-11 w-full rounded-2xl text-sm"
+          size="md"
+          variant="ghost"
+          onClick={goTutorial}
         >
-          {tv(t, 'home.newApiary', 'New Apiary')}
+          {tv(t, 'home.tutorial', 'Tutorial')}
         </Button>
       </div>
 
       {/* Lista de apiarios */}
       <div className="mt-4 space-y-4">
-        {cards.map((c) => (
+        {allCards.map((c) => (
           <button
             key={c.id}
             className="relative h-40 w-full overflow-hidden rounded-2xl text-left shadow-lg ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            onClick={() => router.push(`/apiaries/${encodeURIComponent(c.id)}`)} // ✅ ruta correcta
+            onClick={() => router.push(`/apiaries/${encodeURIComponent(c.id)}`)}
           >
             {c.imageUrl ? (
               <Image src={c.imageUrl} alt={c.name} fill className="object-cover" />
@@ -108,18 +197,11 @@ export default function ApiariesClient({ cards }: { cards: ApiaryCard[] }) {
           </button>
         ))}
 
-        {cards.length === 0 && (
+        {allCards.length === 0 && (
           <div className="rounded-2xl bg-neutral-900 p-4 text-sm text-neutral-300 ring-1 ring-black/5">
             {tv(t, 'home.empty', 'No apiaries yet. Create your first one!')}
           </div>
         )}
-
-        <Button className="mt-2 h-12 w-full rounded-2xl" size="lg" onClick={goCapture}>
-          <span className="inline-flex items-center gap-2">
-            <Image src="/images/camera.png" alt="" width={18} height={18} />
-            {tv(t, 'home.capture', 'Capture / Analyze')}
-          </span>
-        </Button>
 
         <p className="mt-6 text-center text-xs text-neutral-500">
           <span className="text-neutral-400">{t('common.poweredBy')} </span>

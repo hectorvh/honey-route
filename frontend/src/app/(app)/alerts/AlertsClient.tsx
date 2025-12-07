@@ -1,7 +1,8 @@
+// frontend/src/app/(app)/alerts/AlertsClient.tsx
 'use client';
 
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import CardShell from '@/components/shell/CardShell';
@@ -53,14 +54,17 @@ function Pill({ sev }: { sev: Severity }) {
   );
 }
 
-function Row({ a, onClick }: { a: AlertItem; onClick: () => void }) {
+function Row({ a, onClick, resolved }: { a: AlertItem; onClick: () => void; resolved: boolean }) {
   const { t } = useI18n();
   const title = a.listKey ? tv(t, a.listKey, a.listText ?? a.title) : (a.listText ?? a.title);
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-2xl bg-neutral-900 p-3 text-left ring-1 ring-black/5 transition hover:bg-neutral-800"
+      className={`w-full rounded-2xl p-3 text-left ring-1 ring-black/5 transition ${
+        resolved ? 'bg-neutral-900/60 opacity-80' : 'bg-neutral-900 hover:bg-neutral-800'
+      }`}
     >
       <div className="flex items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-full bg-white">
@@ -74,7 +78,9 @@ function Row({ a, onClick }: { a: AlertItem; onClick: () => void }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold">
+          <p
+            className={`truncate font-semibold ${resolved ? 'line-through text-neutral-400' : ''}`}
+          >
             {a.hive.name}: {title}
           </p>
           <div className="mt-1 flex items-center gap-2 text-sm text-neutral-400">
@@ -83,6 +89,14 @@ function Row({ a, onClick }: { a: AlertItem; onClick: () => void }) {
             </span>
             <span>·</span>
             <span>{ago(a.createdAt, t)}</span>
+            {resolved && (
+              <>
+                <span>·</span>
+                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300">
+                  {tv(t, 'alerts.status.resolved', 'Resolved')}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -103,11 +117,38 @@ export default function AlertsClient() {
   const [sev, setSev] = useState<SevFilter>('all');
   const [typ, setTyp] = useState<TypeFilter>('all');
   const [sort, setSort] = useState<'recent' | 'severity'>('recent');
+  const [resolvedIds, setResolvedIds] = useState<string[]>([]);
+  const [hideResolved, setHideResolved] = useState(false);
+
+  // lee resolvedAlerts de localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('resolvedAlerts');
+      const ids: string[] = raw ? JSON.parse(raw) : [];
+      setResolvedIds(ids);
+    } catch {
+      setResolvedIds([]);
+    }
+  }, []);
+
+  const sevCounts = useMemo(
+    () =>
+      items.reduce(
+        (acc, a) => {
+          acc[a.severity] += 1;
+          return acc;
+        },
+        { high: 0, medium: 0, low: 0 } as { high: number; medium: number; low: number }
+      ),
+    [items]
+  );
 
   const filtered = useMemo(() => {
     let out = items.slice();
     if (sev !== 'all') out = out.filter((a) => a.severity === sev);
     if (typ !== 'all') out = out.filter((a) => a.type === typ);
+    if (hideResolved) out = out.filter((a) => !resolvedIds.includes(a.id));
+
     if (sort === 'severity') {
       const rank: Record<Severity, number> = { high: 3, medium: 2, low: 1 };
       out.sort((a, b) => rank[b.severity] - rank[a.severity]);
@@ -115,7 +156,7 @@ export default function AlertsClient() {
       out.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
     }
     return out;
-  }, [items, sev, typ, sort]);
+  }, [items, sev, typ, sort, hideResolved, resolvedIds]);
 
   const Chip = ({
     active,
@@ -155,7 +196,26 @@ export default function AlertsClient() {
         {tv(t, 'alerts.title', 'Alerts')}
       </h1>
 
-      {/* Filters */}
+      {/* Resumen rápido */}
+      <div className="mt-3 rounded-2xl bg-neutral-900 p-4 ring-1 ring-black/5">
+        <p className="text-sm font-semibold">{tv(t, 'alerts.summary.title', 'Status overview')}</p>
+        <div className="mt-2 flex flex-wrap gap-2 text-xs">
+          <span className="rounded-full bg-rose-500 px-3 py-1 font-semibold text-white">
+            {tv(t, 'alerts.sev.high', 'High')}: {sevCounts.high}
+          </span>
+          <span className="rounded-full bg-amber-400 px-3 py-1 font-semibold text-black">
+            {tv(t, 'alerts.sev.medium', 'Medium')}: {sevCounts.medium}
+          </span>
+          <span className="rounded-full bg-emerald-500 px-3 py-1 font-semibold text-white">
+            {tv(t, 'alerts.sev.low', 'Low')}: {sevCounts.low}
+          </span>
+          <span className="ml-auto rounded-full bg-neutral-800 px-3 py-1 text-neutral-200">
+            {tv(t, 'alerts.summary.total', 'Total')}: {items.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Filtros */}
       <div className="mt-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-neutral-400">
@@ -199,13 +259,30 @@ export default function AlertsClient() {
           <Chip active={sort === 'severity'} onClick={() => setSort('severity')}>
             {tv(t, 'alerts.sort.severity', 'Severity')}
           </Chip>
+
+          <div className="ml-auto flex items-center gap-2">
+            <label className="flex items-center gap-1 text-xs text-neutral-300">
+              <input
+                type="checkbox"
+                checked={hideResolved}
+                onChange={(e) => setHideResolved(e.target.checked)}
+                className="h-3 w-3 rounded border-neutral-600 bg-neutral-900 text-amber-400"
+              />
+              {tv(t, 'alerts.filter.hideResolved', 'Hide resolved')}
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* List */}
+      {/* Lista */}
       <div className="mt-5 space-y-3">
         {filtered.map((a) => (
-          <Row key={a.id} a={a} onClick={() => router.push(`/alerts/${a.id}`)} />
+          <Row
+            key={a.id}
+            a={a}
+            resolved={resolvedIds.includes(a.id)}
+            onClick={() => router.push(`/alerts/${a.id}`)}
+          />
         ))}
         {filtered.length === 0 && (
           <p className="rounded-2xl bg-neutral-900 p-4 text-sm text-neutral-300 ring-1 ring-black/5">

@@ -1,6 +1,12 @@
-export type { ActionEntry, Kpis } from '@/app/(app)/analysis/history/HistoryClient';
+export type {
+  ActionEntry,
+  Kpis,
+} from '@/app/(app)/apiaries/quick-analysis/analysis/history/HistoryClient';
 
-import type { ActionEntry, Kpis } from '@/app/(app)/analysis/history/HistoryClient';
+import type {
+  ActionEntry,
+  Kpis,
+} from '@/app/(app)/apiaries/quick-analysis/analysis/history/HistoryClient';
 
 export async function listHistory(
   userId: string,

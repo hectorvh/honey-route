@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type React from 'react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -8,35 +9,38 @@ import Select from '@/components/forms/Select';
 
 type Mgmt = 'conventional' | 'organic' | 'integrated';
 
-export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
+type ApiaryCreated = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+};
+
+export default function NewApiaryForm({ onDone }: { onDone?: (apiary: ApiaryCreated) => void }) {
   const { t } = useI18n();
 
   // Básicos
   const [name, setName] = useState('');
-  const [location, setLocation] = useState(''); // ciudad/estado/país libre
-  // Coordenadas (opcionales)
-  const [lat, setLat] = useState<string>('');
-  const [lng, setLng] = useState<string>('');
+  const [location, setLocation] = useState(''); // ciudad / país / lo que sea
   // Otros datos útiles
-  const [elevation, setElevation] = useState<string>(''); // msnm
+  const [elevation, setElevation] = useState<string>(''); // msnm (opcional)
   const [mgmt, setMgmt] = useState<Mgmt>('integrated');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState(''); // data URL de la foto subida
 
-  const getMyLocation = () => {
-    if (!('geolocation' in navigator)) {
-      setErr(t('apiary.errors.noGeo') || t('map.noGeo') || 'Geolocation not available.');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (p) => {
-        setLat(String(p.coords.latitude.toFixed(6)));
-        setLng(String(p.coords.longitude.toFixed(6)));
-      },
-      () => setErr(t('apiary.errors.geoDenied') || t('map.geoDenied') || 'Permission denied.'),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
-    );
+  // Manejar upload de imagen desde el dispositivo
+  const onImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setImageUrl(reader.result); // data:image/png;base64,....
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,18 +50,19 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
 
     setLoading(true);
     try {
-      // Crea apiario activo en localStorage
+      const nowIso = new Date().toISOString();
+
+      // Crea apiario activo en localStorage (sin lat/lng, solo ubicación general)
       const apiary = {
         id: `apiary-${Date.now()}`,
         name: name.trim(),
         location: location || null,
-        lat: lat ? Number(lat) : null,
-        lng: lng ? Number(lng) : null,
         elevation: elevation ? Number(elevation) : null,
         mgmt,
         notes: notes || null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        imageUrl: imageUrl || null,
+        created_at: nowIso,
+        updated_at: nowIso,
       };
 
       // Guarda "apiario activo"
@@ -67,7 +72,26 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
       const rawH = localStorage.getItem('hr.hives');
       if (!rawH) localStorage.setItem('hr.hives', JSON.stringify([]));
 
-      onDone?.();
+      // Guarda en lista de apiarios locales para mezclarlos con los mocks
+      try {
+        const rawList = localStorage.getItem('hr.apiaries');
+        let list: (typeof apiary)[] = [];
+        if (rawList) {
+          const parsed = JSON.parse(rawList);
+          if (Array.isArray(parsed)) list = parsed;
+        }
+        list.push(apiary);
+        localStorage.setItem('hr.apiaries', JSON.stringify(list));
+      } catch {
+        // si algo falla aquí, al menos hr.apiary ya está
+      }
+
+      // Avisar al padre cuál apiario se creó
+      onDone?.({
+        id: apiary.id,
+        name: apiary.name,
+        imageUrl: apiary.imageUrl,
+      });
     } catch {
       setErr(t('common.genericError') || 'Could not save apiary.');
     } finally {
@@ -89,47 +113,16 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
         />
       </div>
 
-      {/* Ubicación libre */}
+      {/* Ubicación libre (ciudad, país…) */}
       <div>
         <label className="mb-2 block text-sm text-neutral-400">
           {t('apiary.locationLabel') || t('apiary.locationOpt') || 'Location (optional)'}
         </label>
         <Input
-          placeholder={t('apiary.locationPh') || 'City, state/country'}
+          placeholder={t('apiary.locationPh') || 'City, country'}
           value={location}
           onChange={(ev) => setLocation(ev.target.value)}
         />
-      </div>
-
-      {/* Coordenadas */}
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="mb-2 block text-sm text-neutral-400">{t('apiary.lat') || 'Lat'}</label>
-          <Input
-            inputMode="decimal"
-            placeholder="-15.793889"
-            value={lat}
-            onChange={(ev) => setLat(ev.target.value)}
-          />
-        </div>
-        <div>
-          <label className="mb-2 block text-sm text-neutral-400">{t('apiary.lng') || 'Lng'}</label>
-          <Input
-            inputMode="decimal"
-            placeholder="-47.882778"
-            value={lng}
-            onChange={(ev) => setLng(ev.target.value)}
-          />
-        </div>
-      </div>
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={getMyLocation}
-          className="text-xs underline underline-offset-2 text-amber-400"
-        >
-          {t('apiary.useMyLocation') || 'Use my location'}
-        </button>
       </div>
 
       {/* Elevación y manejo */}
@@ -159,6 +152,44 @@ export default function NewApiaryForm({ onDone }: { onDone?: () => void }) {
             ]}
           />
         </div>
+      </div>
+
+      {/* Foto (subir desde dispositivo) */}
+      <div>
+        <label className="mb-2 block text-sm text-neutral-400">
+          {t('apiary.photoLabel') || 'Photo (optional)'}
+        </label>
+
+        {/* input real, oculto */}
+        <input
+          id="apiary-photo-input"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onImageFileChange}
+        />
+
+        <button
+          type="button"
+          onClick={() => document.getElementById('apiary-photo-input')?.click()}
+          className="h-10 rounded-2xl bg-neutral-900 px-4 text-sm font-semibold text-white ring-1 ring-black/5 hover:bg-neutral-800"
+        >
+          {imageUrl
+            ? t('apiary.photoChangeCta') || 'Change photo'
+            : t('apiary.photoUploadCta') || 'Upload photo'}
+        </button>
+
+        {imageUrl && (
+          <div className="mt-2 flex items-center gap-3">
+            <div className="h-10 w-10 overflow-hidden rounded-lg ring-1 ring-black/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imageUrl} alt="Apiary preview" className="h-full w-full object-cover" />
+            </div>
+            <p className="text-xs text-neutral-500">
+              {t('apiary.photoSelected') || 'Photo selected and stored locally.'}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Notas */}

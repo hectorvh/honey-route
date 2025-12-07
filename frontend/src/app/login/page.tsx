@@ -32,8 +32,17 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      // Router to home (apiaries) after login or signup
-      router.replace('/apiaries');
+      // Después de login, revisa si ya hay apiario activo
+      let hasApiary = false;
+      try {
+        if (typeof window !== 'undefined') {
+          hasApiary = !!localStorage.getItem('hr.apiary');
+        }
+      } catch {
+        hasApiary = false;
+      }
+
+      router.replace(hasApiary ? '/apiaries' : '/apiaries/new');
     } catch {
       setErr(tv(t, 'auth.notAuthenticated', 'No pudimos iniciar sesión.'));
     } finally {

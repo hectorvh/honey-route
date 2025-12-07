@@ -1,3 +1,4 @@
+//frontend/src/app/(app)/settings/terms/page.tsx
 'use client';
 
 import CardShell from '@/components/shell/CardShell';

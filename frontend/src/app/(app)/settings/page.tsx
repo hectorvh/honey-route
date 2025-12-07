@@ -1,3 +1,4 @@
+// frontend/src/app/(app)/settings/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -41,12 +42,16 @@ function useLocalStorage<T>(key: string, initial: T) {
     try {
       const raw = localStorage.getItem(key);
       if (raw != null) setValue(JSON.parse(raw));
-    } catch {}
+    } catch {
+      // ignore
+    }
   }, [key]);
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch {}
+    } catch {
+      // ignore
+    }
   }, [key, value]);
   return [value, setValue] as const;
 }
@@ -64,7 +69,6 @@ function Row({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-neutral-900 px-4 py-3 ring-1 ring-black/5">
-      {/* sin círculo; respetamos color original del ícono */}
       <div className="shrink-0">{leading}</div>
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold">{title}</p>
@@ -154,11 +158,19 @@ export default function SettingsPage() {
         {t('settings.sections.account')}
       </h2>
       <div className="space-y-3">
-        <Link href="/profile" className="no-underline">
+        <Link href="/settings/profile" className="no-underline">
           <Row
             leading={<Icon name="profile" />}
             title={t('settings.profile')}
             subtitle={t('settings.profileHint')}
+          />
+        </Link>
+
+        <Link href="/settings/subscriptions" className="no-underline">
+          <Row
+            leading={<Icon name="sync" />}
+            title={t('settings.subscriptions')}
+            subtitle={t('settings.subscriptionsHint')}
           />
         </Link>
       </div>

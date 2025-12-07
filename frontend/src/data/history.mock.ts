@@ -1,62 +1,155 @@
-import type { ActionEntry, Kpis } from '@/app/(app)/analysis/history/HistoryClient';
+// frontend/src/data/history.mock.ts
+import { demoHives } from '@/mocks/demoGuestProfile';
 
-const now = Date.now();
-const daysAgo = (d: number) => new Date(now - d * 24 * 60 * 60 * 1000).toISOString();
+export type HistoryKpis = {
+  totalInspections: number;
+  avgHealthPct: number;
+  honeyLbs: number;
+};
 
-export async function listHistoryMock(
-  _userId: string,
-  hiveId: string | null
-): Promise<{ kpis: Kpis; entries: ActionEntry[]; hiveName?: string }> {
-  // Puedes mapear nombres reales si vienes de /map o /alerts
-  const hiveNames: Record<string, string> = {
-    'hive-1': 'Hive 1',
-    'hive-2': 'Hive 2',
-    'hive-3': 'Hive 3',
-    'hive-4': 'Hive 4',
+export type HistoryEntry = {
+  id: string;
+  type: 'inspection' | 'harvest' | 'queen' | 'pest';
+  title: string;
+  createdAt: string;
+  note?: string;
+};
+
+type InternalEntry = HistoryEntry & { hiveId: string };
+
+const NOW = Date.now();
+const minutesAgo = (min: number) => new Date(NOW - min * 60_000).toISOString();
+
+/**
+ * Historia alineada con el demo:
+ *
+ * - Hive A-01 · Rooftop  → temp alta → inspecciones + ajuste de ventilación
+ * - Hive A-02 · Shaded   → humedad alta → revisión + ajuste de airflow
+ * - Hive A-03 · Experimental → reina dudosa → inspección, marcado, posible recambio
+ * - Hive H-01 · Hillside → temp baja leve → monitoreo
+ * - Hive H-02 · Windy    → humedad baja → cierre parcial, monitoreo
+ */
+const ALL_ENTRIES: InternalEntry[] = [
+  // A-03: la crítica
+  {
+    id: 'h-a03-1',
+    hiveId: 'hive-azul-a03',
+    type: 'inspection',
+    title: 'Brood pattern inspection',
+    createdAt: minutesAgo(180),
+    note: 'Detected patchy brood pattern and reduced egg laying.',
+  },
+  {
+    id: 'h-a03-2',
+    hiveId: 'hive-azul-a03',
+    type: 'queen',
+    title: 'Queen status follow-up',
+    createdAt: minutesAgo(90),
+    note: 'Marked current queen; considering requeening if pattern does not improve.',
+  },
+
+  // A-01: temperatura alta
+  {
+    id: 'h-a01-1',
+    hiveId: 'hive-azul-a01',
+    type: 'inspection',
+    title: 'Rooftop temperature check',
+    createdAt: minutesAgo(240),
+    note: 'Brood nest running hot during peak sun hours; tested extra ventilation.',
+  },
+  {
+    id: 'h-a01-2',
+    hiveId: 'hive-azul-a01',
+    type: 'pest',
+    title: 'Varroa quick check',
+    createdAt: minutesAgo(200),
+    note: 'No significant mite load detected in sample.',
+  },
+
+  // A-02: humedad alta
+  {
+    id: 'h-a02-1',
+    hiveId: 'hive-azul-a02',
+    type: 'inspection',
+    title: 'Humidity and condensation review',
+    createdAt: minutesAgo(360),
+    note: 'Condensation on inner cover; adjusted ventilation and entrance reducer.',
+  },
+
+  // H-02: humedad baja (viento)
+  {
+    id: 'h-h02-1',
+    hiveId: 'hive-hector-h02',
+    type: 'inspection',
+    title: 'Wind exposure check',
+    createdAt: minutesAgo(300),
+    note: 'Dry, windy conditions; added partial windbreak on north side.',
+  },
+
+  // H-01: evento frío leve
+  {
+    id: 'h-h01-1',
+    hiveId: 'hive-hector-h01',
+    type: 'inspection',
+    title: 'Overnight temperature dip',
+    createdAt: minutesAgo(420),
+    note: 'Short low-temperature event before sunrise; colony recovered quickly.',
+  },
+
+  // Un par de cosechas generales para kpis
+  {
+    id: 'h-a01-harvest-1',
+    hiveId: 'hive-azul-a01',
+    type: 'harvest',
+    title: 'Rooftop super harvest',
+    createdAt: minutesAgo(1440),
+    note: 'Harvested one shallow super (~25 lbs).',
+  },
+  {
+    id: 'h-h01-harvest-1',
+    hiveId: 'hive-hector-h01',
+    type: 'harvest',
+    title: 'Hillside spring harvest',
+    createdAt: minutesAgo(2880),
+    note: 'Early spring harvest (~30 lbs) with strong floral diversity.',
+  },
+];
+
+export async function listHistoryMock(userId: string, hiveId?: string | null) {
+  // filtrado por hive si viene de /analysis/result o /alerts detail
+  const filteredInternal = hiveId ? ALL_ENTRIES.filter((e) => e.hiveId === hiveId) : ALL_ENTRIES;
+
+  const entries: HistoryEntry[] = filteredInternal.map((e) => ({
+    id: e.id,
+    type: e.type,
+    title: e.title,
+    createdAt: e.createdAt,
+    note: e.note,
+  }));
+  // Hives que entran al cálculo de KPIs
+  const scopeHives = hiveId ? demoHives.filter((h) => h.id === hiveId) : demoHives;
+
+  const totalInspections = filteredInternal.filter((e) => e.type === 'inspection').length || 3;
+
+  const avgHealthPct =
+    scopeHives.length > 0
+      ? Math.round(scopeHives.reduce((sum, h) => sum + h.healthScore, 0) / scopeHives.length)
+      : 80;
+
+  const honeyLbs =
+    filteredInternal.filter((e) => e.type === 'harvest').length > 0
+      ? 55 // 25 + 30 aprox
+      : 0;
+
+  const hiveName = hiveId ? scopeHives.find((h) => h.id === hiveId)?.label : undefined;
+
+  return {
+    kpis: {
+      totalInspections,
+      avgHealthPct,
+      honeyLbs,
+    } as HistoryKpis,
+    entries,
+    hiveName,
   };
-
-  // Datos simulados (puedes asignar mentalmente cada entry a un hive distinto si quieres filtrar)
-  const all: ActionEntry[] = [
-    {
-      id: 'e1',
-      type: 'inspection',
-      title: 'Routine inspection',
-      createdAt: daysAgo(1),
-      note: 'No issues.',
-    },
-    {
-      id: 'e2',
-      type: 'queen',
-      title: 'Queen check',
-      createdAt: daysAgo(3),
-      note: 'Even brood pattern.',
-    },
-    {
-      id: 'e3',
-      type: 'harvest',
-      title: 'Honey harvest',
-      createdAt: daysAgo(7),
-      note: '~8 lbs extracted.',
-    },
-    {
-      id: 'e4',
-      type: 'pest',
-      title: 'Varroa treatment',
-      createdAt: daysAgo(10),
-      note: 'OA vaporization.',
-    },
-  ];
-
-  // Si quieres aplicar filtro por hive, aquí podrías separar por IDs;
-  // por ahora devolvemos todos para mantener la demo simple.
-  const entries = all;
-
-  const kpis: Kpis = {
-    totalInspections: 12,
-    avgHealthPct: 86,
-    honeyLbs: 37,
-  };
-
-  const hiveName = hiveId ? hiveNames[hiveId] : undefined;
-  return { kpis, entries, hiveName };
 }

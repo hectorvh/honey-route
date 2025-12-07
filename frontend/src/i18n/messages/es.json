@@ -17,6 +17,60 @@
     "guest": "Continuar como invitado",
     "locale": "ES"
   },
+  "home": {
+    "title": "Mis apiarios",
+    "capture": "Capturar / Analizar",
+    "addHive": "Agregar colmena",
+    "newApiary": "Nuevo apiario",
+    "empty": "Aún no tienes apiarios. ¡Crea el primero!",
+    "hivesCount": "{{count}} colmenas",
+    "quickAnalysis": "Análisis rápido",
+    "tutorial": "Tutorial",
+    "status": {
+      "healthy": "Saludable",
+      "warning": "Advertencia",
+      "attention": "Requiere atención",
+      "critical": "Crítico"
+    },
+    "nav": {
+      "home": "Inicio",
+      "alerts": "Alertas",
+      "map": "Mapa",
+      "analytics": "Analítica",
+      "settings": "Ajustes"
+    }
+  },
+  "quickAnalysis": {
+    "title": "Análisis rápido",
+    "subtitle": "Elige un apiario y una colmena, añade fotos y ejecuta un análisis completo con IA.",
+
+    "noApiary": "Necesitas al menos un apiario para usar Análisis rápido.",
+
+    "apiaryLabel": "Apiario",
+    "apiaryPlaceholder": "Selecciona un apiario",
+    "apiaryLocked": "Apiario seleccionado desde la vista de detalles (puedes cambiarlo desde Inicio).",
+
+    "hiveLabel": "Colmena",
+    "hivePlaceholder": "Selecciona una colmena",
+    "noHives": "No se encontraron colmenas para este apiario todavía. Intenta crear una desde la página del apiario.",
+
+    "mediaTitle": "Entrada de fotos",
+    "mediaEmpty": "Aún no hay imágenes. Captura o sube al menos una antes de ejecutar el análisis.",
+    "mediaOneImage": "1 imagen seleccionada",
+    "mediaManyImages": "{{count}} imágenes seleccionadas",
+    "mediaVideoAttached": "1 video adjunto (opcional)",
+    "mediaHint": "Captura o sube hasta 5 imágenes; se usarán en el análisis profundo.",
+
+    "error": {
+      "noApiary": "Selecciona un apiario.",
+      "noHive": "Selecciona una colmena para ejecutar el análisis.",
+      "noMedia": "Añade al menos una foto antes de ejecutar el análisis."
+    },
+
+    "takePhoto": "Tomar foto",
+    "upload": "Subir",
+    "run": "Ejecutar análisis completo"
+  },
   "apiary": {
     "newTitle": "Nuevo apiario",
     "newSubtitle": "Crea tu primer apiario para comenzar.",
@@ -38,7 +92,36 @@
     "mgmtLabel": "Manejo",
     "notesLabel": "Notas (opcional)",
     "notesPh": "Flora local, acceso, riego, etc.",
-    "details": { "title": "Detalle del apiario" },
+    "details": {
+      "title": "Detalle del apiario"
+    },
+    "photoLabel": "Foto del apiario (opcional)",
+    "photoUploadCta": "Subir foto",
+    "photoChangeCta": "Cambiar foto",
+    "photoSelected": "Foto seleccionada y guardada localmente.",
+    "title": "Análisis rápido",
+    "subtitle": "Elige un apiario y una colmena, añade fotos y ejecuta un análisis completo con IA.",
+    "noApiary": "Necesitas al menos un apiario para usar Análisis rápido.",
+    "apiaryLabel": "Apiario",
+    "apiaryPlaceholder": "Selecciona un apiario",
+    "apiaryLocked": "Apiario seleccionado desde la vista de detalles (puedes cambiarlo desde Inicio).",
+    "hiveLabel": "Colmena",
+    "hivePlaceholder": "Selecciona una colmena",
+    "noHives": "No se encontraron colmenas para este apiario todavía. Intenta crear una desde la página del apiario.",
+    "mediaTitle": "Entrada de fotos",
+    "mediaEmpty": "Aún no hay imágenes. Captura o sube al menos una antes de ejecutar el análisis.",
+    "mediaOneImage": "1 imagen seleccionada",
+    "mediaManyImages": "{{count}} imágenes seleccionadas",
+    "mediaVideoAttached": "1 video adjunto (opcional)",
+    "mediaHint": "Captura o sube hasta 5 imágenes; se usarán en el análisis profundo.",
+    "error": {
+      "noApiary": "Selecciona un apiario.",
+      "noHive": "Selecciona una colmena para ejecutar el análisis.",
+      "noMedia": "Añade al menos una foto antes de ejecutar el análisis."
+    },
+    "takePhoto": "Tomar foto",
+    "upload": "Subir",
+    "run": "Ejecutar análisis completo",
     "tabs": {
       "status": "Estado",
       "history": "Historial",
@@ -80,7 +163,21 @@
       "integrated": "Integrado",
       "conventional": "Convencional",
       "organic": "Orgánico"
-    }
+    },
+    "hivesEmpty": "Aún no hay colmenas en este apiario.",
+    "hivesTitle": "Colmenas",
+    "dashboardTitle": "Entorno",
+
+    "sensorSetup": {
+      "title": "Configuración de sensores",
+      "desc": "Configura qué sensores están activos y sus umbrales.",
+      "cta": "Configurar"
+    },
+
+    "lastUpdate": "Última actualización",
+    "edit": "Editar",
+    "active": "Activo",
+    "paused": "Pausado"
   },
   "hive": {
     "newTitle": "Nueva colmena",
@@ -134,77 +231,6 @@
       "evidenceHint": "Desliza para comparar “Antes” vs “Después”."
     }
   },
-  "common": {
-    "back": "Atrás",
-    "other": "Otros",
-    "poweredBy": "Con tecnología de",
-    "genericError": "Algo salió mal."
-  },
-  "auth": {
-    "notAuthenticated": "Necesitas iniciar sesión.",
-    "forbidden": "No tienes acceso."
-  },
-  "settings": {
-    "title": "Ajustes",
-    "sections": {
-      "account": "Cuenta",
-      "preferences": "Preferencias",
-      "theme": "Tema",
-      "support": "Soporte y Legal"
-    },
-    "profile": "Perfil",
-    "profileHint": "Gestiona tu perfil",
-    "units": "Unidades",
-    "unitsHint": "Elige tus unidades preferidas",
-    "offline": "Sincronización offline",
-    "offlineHint": "Sincroniza datos para usar sin conexión",
-    "privacy": "Privacidad",
-    "privacyHint": "Gestiona tu privacidad",
-    "language": "Idioma",
-    "languageHint": "Idioma de la interfaz",
-    "dark": "Modo oscuro",
-    "darkHint": "Cambiar al tema oscuro",
-    "en": "EN",
-    "es": "ES",
-    "signOut": "Cerrar sesión"
-  },
-  "home": {
-    "title": "Mis apiarios",
-    "capture": "Capturar / Analizar",
-    "addHive": "Agregar colmena",
-    "newApiary": "Nuevo apiario",
-    "empty": "Aún no tienes apiarios. ¡Crea el primero!",
-    "hivesCount": "{{count}} colmenas",
-    "status": {
-      "healthy": "Saludable",
-      "attention": "Requiere atención",
-      "critical": "Crítico"
-    },
-    "nav": {
-      "home": "Inicio",
-      "alerts": "Alertas",
-      "map": "Mapa",
-      "settings": "Ajustes"
-    }
-  },
-  "map": {
-    "title": "Mapa",
-    "searchPh": "Buscar colmenas o lugares",
-    "search": "Buscar",
-    "hives": "Colmenas",
-    "comingSoon": "Mapas florales y zonas de riesgo en próximas versiones",
-    "locate": "Mi ubicación",
-    "noGeo": "Geolocalización no disponible",
-    "geoDenied": "Permiso denegado",
-    "empty": "No hay colmenas para mostrar",
-    "zoomHere": "Ir aquí",
-    "youAreHere": "Estás aquí",
-    "highlight": "Destacado",
-    "a11y": {
-      "zoomIn": "Acercar",
-      "zoomOut": "Alejar"
-    }
-  },
   "camera": {
     "title": "Cámara",
     "flip": "Cambiar",
@@ -239,21 +265,52 @@
     "loading": {
       "title": "Análisis",
       "main": "Analizando tus imágenes...",
-      "hint": "Espera mientras calculamos el riesgo y las detecciones.",
-      "noPayload": "No hay imágenes para analizar."
+      "hint": "Espera mientras calculamos el riesgo, las detecciones y los indicadores de salud.",
+      "noPayload": "No hay imágenes para analizar.",
+      "invalidPayload": "No se pudieron leer los datos del análisis. Inténtalo de nuevo desde Análisis rápido.",
+      "noMedia": "No se encontró contenido multimedia en el análisis. Añade al menos una foto.",
+      "errorTitle": "Nada que analizar",
+      "summary": "Medios: {{count}} imagen(es)",
+      "backToQuick": "Ir a Análisis rápido"
     },
+
     "result": {
       "title": "Resultado del análisis",
+      "loading": "Cargando resultado desde la sesión…",
+      "status.queued": "En cola",
+      "status.running": "En ejecución",
+      "status.done": "Completado",
+      "status.error": "Error",
+      "noResult": "No se encontró ningún resultado de análisis. Inicia desde Análisis rápido.",
+      "invalid": "No se pudo leer el resultado del análisis. Vuelve a ejecutar el análisis.",
+      "errorTitle": "Resultado no disponible",
+
       "riskTitle": "Nivel de riesgo",
-      "risk": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
-      "detections": "Detecciones",
-      "sev": { "low": "Bajo", "medium": "Medio", "high": "Alto" },
-      "none": "No se detectaron problemas.",
-      "imagesReviewed": "{{count}} imágenes revisadas",
-      "timeTaken": "Procesado en {{sec}} s",
-      "riskShort": "RIESGO",
-      "seeRecs": "Ver recomendaciones",
-      "logAction": "Registrar acción"
+      "risk": {
+        "low": "Bajo",
+        "medium": "Medio",
+        "high": "Alto"
+      },
+      "riskLowBody": "El riesgo general es bajo; continúa con inspecciones y monitoreo rutinario.",
+      "riskMedBody": "Algunos indicadores requieren atención; programa una inspección enfocada pronto.",
+      "riskHighBody": "Se detectó alto riesgo; prioriza esta colmena y revisa las condiciones críticas.",
+
+      "summary": "Medios analizados: {{count}} imagen(es)",
+      "riskChip": "Riesgo general de la colmena",
+      "sourceChip": "Fuente",
+
+      "jobTitle": "Información del trabajo",
+      "jobId": "ID de trabajo",
+      "status": "Estado",
+      "hiveLabel": "Colmena",
+      "apiaryLabel": "Apiario",
+
+      "detectionsTitle": "Detecciones",
+      "noDetections": "No se detectaron problemas importantes en este análisis (placeholder de demo).",
+
+      "again": "Volver a ejecutar",
+      "logAction": "Ver historial",
+      "goMap": "Ver colmena en el mapa"
     },
     "recs": {
       "title": "Recomendaciones",
@@ -299,6 +356,247 @@
       "harvest": "Cosecha ligera del alza superior.",
       "queen": "Introducción de reina realizada.",
       "pest": "Vaporización con AO."
+    }
+  },
+  "alerts": {
+    "title": "Alertas",
+    "filter": {
+      "sev": "Severidad",
+      "type": "Tipo",
+      "all": "Todos"
+    },
+    "type": {
+      "temp": "Temperatura",
+      "humidity": "Humedad",
+      "queen": "Reina"
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "recent": "Más recientes",
+      "severity": "Severidad"
+    },
+    "empty": "No hay alertas que coincidan",
+    "sev": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "time": {
+      "now": "ahora",
+      "m": "hace {{count}} min",
+      "h": "hace {{count}} h",
+      "d": "hace {{count}} d"
+    },
+    "detail": {
+      "title": "Detalle de alerta",
+      "notFound": "Alerta no encontrada",
+      "cause": "Causa",
+      "linkedHive": "Colmena vinculada",
+      "goHive": "Ir a la colmena",
+      "resolve": "Marcar como resuelta",
+      "resolvedToast": "Marcada como resuelta"
+    },
+    "items": {
+      "a1": {
+        "title": "Alta temperatura detectada",
+        "list": "Alta temperatura"
+      },
+      "a2": {
+        "title": "Humedad fuera del rango óptimo",
+        "list": "Alerta de humedad"
+      },
+      "a3": {
+        "title": "La condición de la reina requiere atención",
+        "list": "Estado de la reina"
+      },
+      "a4": {
+        "title": "Baja temperatura detectada",
+        "list": "Baja temperatura"
+      }
+    }
+  },
+  "map": {
+    "title": "Mapa",
+    "searchPh": "Buscar colmenas o ubicaciones",
+    "search": "Buscar",
+
+    "filter": {
+      "apiary": "Apiario",
+      "allApiaries": "Todos los apiarios",
+      "hive": "Colmena en foco (opcional)",
+      "hivePlaceholder": "Selecciona una colmena para enfocar"
+    },
+
+    "noGeo": "La geolocalización no está disponible.",
+    "geoDenied": "Permiso de geolocalización denegado.",
+
+    "alertWhy": "Por qué se activó esta alerta",
+    "alertRiskLabel": "Nivel de riesgo",
+    "alertRisk": {
+      "none": "Ninguno"
+    },
+
+    "alert": {
+      "defaultCause": "Condición fuera del rango recomendado.",
+      "defaultDetails": "Revisa las condiciones recientes de la colmena.",
+      "cause": "Causa",
+      "details": "Detalles"
+    },
+
+    "zoomHere": "Centrar aquí",
+
+    "a11y": {
+      "zoomIn": "Acercar mapa",
+      "zoomOut": "Alejar mapa"
+    },
+
+    "locate": "Ubicarme",
+
+    "groups": {
+      "title": "Apiarios en el mapa",
+      "empty": "Todavía no hay colmenas para mostrar.",
+      "hiveLabel": {
+        "one": "colmena",
+        "many": "colmenas"
+      }
+    },
+
+    "tag": {
+      "local": "· local"
+    }
+  },
+  "analytics": {
+    "title": "Analítica",
+    "subtitle": "Resumen de tus apiarios, colmenas y alertas (datos de demostración).",
+    "kpi": {
+      "apiaries": "Apiarios",
+      "apiariesHint": "Aprox. contado a partir de colmenas agrupadas por apiario.",
+      "hives": "Colmenas",
+      "hivesHint": "Total de colmenas guardadas localmente en este dispositivo.",
+      "alerts": "Alertas (demo)",
+      "alertsHint": "Basado en alertas de ejemplo actualmente cargadas en la app."
+    },
+    "topHives": {
+      "title": "Colmenas con más alertas",
+      "empty": "Aún no hay alertas. Cuando se generen, verás aquí las colmenas más afectadas.",
+      "alert": "alerta",
+      "alerts": "alertas"
+    },
+    "cta": {
+      "alerts": "Abrir alertas"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "sections": {
+      "account": "Cuenta",
+      "preferences": "Preferencias",
+      "theme": "Tema",
+      "support": "Soporte y Legal"
+    },
+    "profilePage": {
+      "title": "Perfil",
+      "subtitle": "Actualiza tu información básica. Se guarda localmente para esta demo.",
+      "name": "Nombre",
+      "namePh": "Ej. Ana Martínez",
+      "email": "Correo electrónico",
+      "emailPh": "tu@ejemplo.com",
+      "org": "Organización",
+      "orgPh": "Cooperativa / Granja / Apiario",
+      "role": "Rol",
+      "rolePh": "Apicultor, técnico, etc.",
+      "saved": "Guardado localmente.",
+      "saveCta": "Guardar perfil",
+      "localNote": "Para esta demo, los datos de perfil solo se almacenan en tu navegador."
+    },
+    "unitsPage": {
+      "title": "Unidades y formatos",
+      "subtitle": "Elige cómo prefieres ver temperaturas, distancias y pesos.",
+      "temperature": "Temperatura",
+      "temperatureHint": "Se usa para temperatura de nido, colmena y clima.",
+      "distance": "Distancia",
+      "distanceHint": "Para mapas, radio de pecoreo y distancias de viaje.",
+      "weight": "Peso",
+      "weightHint": "Para peso de colmena, cosechas y alimentación.",
+      "saved": "Preferencias guardadas.",
+      "saveCta": "Guardar unidades",
+      "resetCta": "Restablecer",
+      "localNote": "Estas preferencias se guardan en tu navegador y puedes cambiarlas cuando quieras."
+    },
+    "profile": "Perfil",
+    "profileHint": "Gestiona tu perfil",
+    "units": "Unidades",
+    "unitsHint": "Elige tus unidades preferidas",
+    "offline": "Sincronización offline",
+    "offlineHint": "Sincroniza datos para usar sin conexión",
+    "privacy": "Privacidad",
+    "privacyHint": "Gestiona tu privacidad",
+    "language": "Idioma",
+    "languageHint": "Idioma de la interfaz",
+    "dark": "Modo oscuro",
+    "darkHint": "Cambiar al tema oscuro",
+    "en": "EN",
+    "es": "ES",
+    "signOut": "Cerrar sesión",
+    "subscriptions": "Suscripciones",
+    "subscriptionsHint": "Elige o cambia tu plan",
+    "subs": {
+      "title": "Suscripciones",
+      "hint": "Elige o cambia tu plan",
+      "page": {
+        "title": "Suscripciones",
+        "subtitle": "Elige un plan. Puedes cambiar cuando quieras."
+      },
+      "price": {
+        "free": "$0",
+        "pro": "$9",
+        "team": "$29"
+      },
+      "perMonth": "/mes",
+      "plan": {
+        "hobby": {
+          "name": "Hobby",
+          "tag": "Para uso personal y aprendizaje"
+        },
+        "pro": {
+          "name": "Pro",
+          "tag": "Ideal para apicultores activos"
+        },
+        "team": {
+          "name": "Equipo",
+          "tag": "Para equipos y cooperativas"
+        }
+      },
+      "features": {
+        "images": "Imágenes",
+        "storage": "Almacenamiento",
+        "alerts": "Alertas",
+        "offline": "Modo sin conexión",
+        "mapLayers": "Capas del mapa",
+        "multiUser": "Miembros del equipo",
+        "images.val": {
+          "hobby": "50/mes",
+          "pro": "500/mes",
+          "team": "5k/mes"
+        },
+        "storage.val": {
+          "hobby": "1 GB",
+          "pro": "10 GB",
+          "team": "100 GB"
+        },
+        "alerts.val": {
+          "hobby": "Básicas",
+          "pro": "Inteligentes",
+          "team": "Avanzadas"
+        },
+        "offline.val": "Sí",
+        "mapLayers.val": "Floral y riesgo",
+        "multiUser.val": "Hasta 10"
+      },
+      "recommended": "Recomendado",
+      "current": "Plan actual",
+      "select": "Elegir plan",
+      "disclaimer": "Precios de demostración. Facturación próximamente."
     }
   },
   "help": {
@@ -352,41 +650,34 @@
       "t": "Alertas críticas",
       "d": "Eventos de salud o riesgo que requieren atención."
     },
-    "routine": { "t": "Recordatorios rutinarios", "d": "Mantenimiento y tareas periódicas." },
-    "updates": { "t": "Actualizaciones de la app", "d": "Novedades y mejoras." },
-    "urgent": { "t": "Alertas urgentes", "d": "Avisos inmediatos en tu dispositivo." },
-    "general": { "t": "Notificaciones generales", "d": "Actualizaciones y consejos." },
+    "routine": {
+      "t": "Recordatorios rutinarios",
+      "d": "Mantenimiento y tareas periódicas."
+    },
+    "updates": {
+      "t": "Actualizaciones de la app",
+      "d": "Novedades y mejoras."
+    },
+    "urgent": {
+      "t": "Alertas urgentes",
+      "d": "Avisos inmediatos en tu dispositivo."
+    },
+    "general": {
+      "t": "Notificaciones generales",
+      "d": "Actualizaciones y consejos."
+    },
     "enable": "Conceder permiso de push",
     "notSupported": "Las notificaciones push no son compatibles en este dispositivo/navegador.",
     "denied": "No se concedió el permiso."
   },
-  "alerts": {
-    "title": "Alertas",
-    "filter": { "sev": "Severidad", "type": "Tipo", "all": "Todos" },
-    "type": { "temp": "Temperatura", "humidity": "Humedad", "queen": "Reina" },
-    "sort": { "label": "Ordenar por", "recent": "Más recientes", "severity": "Severidad" },
-    "empty": "No hay alertas que coincidan",
-    "sev": { "high": "Alta", "medium": "Media", "low": "Baja" },
-    "time": {
-      "now": "ahora",
-      "m": "hace {{count}} min",
-      "h": "hace {{count}} h",
-      "d": "hace {{count}} d"
-    },
-    "detail": {
-      "title": "Detalle de alerta",
-      "notFound": "Alerta no encontrada",
-      "cause": "Causa",
-      "linkedHive": "Colmena vinculada",
-      "goHive": "Ir a la colmena",
-      "resolve": "Marcar como resuelta",
-      "resolvedToast": "Marcada como resuelta"
-    },
-    "items": {
-      "a1": { "title": "Alta temperatura detectada", "list": "Alta temperatura" },
-      "a2": { "title": "Humedad fuera del rango óptimo", "list": "Alerta de humedad" },
-      "a3": { "title": "La condición de la reina requiere atención", "list": "Estado de la reina" },
-      "a4": { "title": "Baja temperatura detectada", "list": "Baja temperatura" }
-    }
+  "common": {
+    "back": "Atrás",
+    "other": "Otros",
+    "poweredBy": "Con tecnología de",
+    "genericError": "Algo salió mal."
+  },
+  "auth": {
+    "notAuthenticated": "Necesitas iniciar sesión.",
+    "forbidden": "No tienes acceso."
   }
 }
