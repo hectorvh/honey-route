@@ -30,5 +30,10 @@
   },
   "dependencies": {
     "next-pwa": "^5.6.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "next": "^14.2.33"
+    }
   }
 }
