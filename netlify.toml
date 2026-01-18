@@ -1,0 +1,37 @@
+[build]
+  # Base directory for the monorepo
+  base = "."
+  # Build command - build the frontend
+  # The @netlify/plugin-nextjs will handle the build automatically
+  command = "cd frontend && pnpm install && pnpm build"
+  # Publish directory - Next.js output (plugin handles this automatically)
+  publish = "frontend/.next"
+
+[build.environment]
+  # Node version
+  NODE_VERSION = "20"
+  # Use pnpm
+  PNPM_VERSION = "9.7.0"
+  # Enable pnpm
+  ENABLE_PNPM = "true"
+  # Handle peer dependency issues with React 19
+  NPM_FLAGS = "--legacy-peer-deps"
+  # Next.js environment
+  NEXT_TELEMETRY_DISABLED = "1"
+  # Ensure production build
+  NODE_ENV = "production"
+
+# Netlify Next.js plugin (required for Next.js 15)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Headers for Leaflet assets
+[[headers]]
+  for = "/leaflet/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

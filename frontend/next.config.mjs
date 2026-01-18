@@ -12,6 +12,19 @@ const baseConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   outputFileTracingRoot: path.join(__dirname, '..'),
+  // Transpile Leaflet packages for Next.js 15 compatibility
+  transpilePackages: ['leaflet', 'react-leaflet'],
+  // Webpack configuration for Leaflet
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Fix for Leaflet markers in client-side rendering
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    return config;
+  },
 };
 
 // PWA
