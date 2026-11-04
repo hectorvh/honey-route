@@ -1,4 +1,5 @@
-# 🐝 HoneyRoute — Apiary Intelligence Platform (Powered by EcoVentus)
+# 🐝 HoneyRoute
+## Apiary Intelligence Platform (Powered by EcoVentus)
 
 > 2nd Place — Huawei Developer Competition LATAM (Brasil) 2025  
 > Mobile-first PWA that empowers beekeepers with AI-driven hive health detection, alerts, and actionable recommendations.
